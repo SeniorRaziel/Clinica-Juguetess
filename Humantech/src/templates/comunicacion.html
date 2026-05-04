@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Comunicación con Donantes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+</head>
+<body>
+    <h2>Informe de Impacto</h2>
+    <p>{{ informe_impacto }}</p>
+
+    <h2>Notificaciones y Agradecimientos</h2>
+    <ul>
+        {% for noti in notificaciones %}
+        <li>{{ noti }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

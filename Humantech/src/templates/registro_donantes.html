@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Donantes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+</head>
+<body>
+    <h2>Información de Contacto</h2>
+    <ul>
+        <li><strong>Nombre:</strong> {{ donante.primer_nombre }} {{ donante.segundo_nombre }} {{ donante.primer_apeliido }} {{ donante.segundo_apellido }}</li>
+        <li><strong>Contacto:</strong> {{ donante.contacto }}</li>
+    </ul>
+
+    <h2>Historial de Donaciones</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <th>Categoría</th>
+                <th>Descripción</th>
+                <th>Monto</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in historial %}
+            <tr>
+                <td>{{ d.id_donacion }}</td>
+                <td>{{ d.tipo_donacion }}</td>
+                <td>{{ d.categoria }}</td>
+                <td>{{ d.descripcion }}</td>
+                <td>{{ d.monto }}</td>
+                <td>{{ d.fecha_donacion }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

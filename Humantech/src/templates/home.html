@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinica de Juguetes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
+</head>
+<body>
+    {% if request.args.get('mensaje') %}
+        <div style="background:#d4edda; color:#155724; border:1px solid #c3e6cb; padding:15px; border-radius:5px; margin-bottom:20px; text-align:center;">
+            {{ request.args.get('mensaje') }}
+        </div>
+    {% endif %}
+    <div class="eslogan-barra">
+        <span class="eslogan">¡Comparte Sonrisas, Dona un juguete Ya!</span>
+        <a href="{{ url_for('gestion') }}" class="btn-donar">Donar ya</a>
+    </div>
+    <div class="head" id="inicio">
+        <div class="logo">
+            <a href="#">
+                <img src="{{ url_for('static', filename='img/logo_ucc_2018(CURVAS)-01.jpg') }}" alt="Logo" style="height: 60px;">
+            </a>
+        </div>
+        <nav class="navegacion">
+            <a href="#inicio">Inicio</a>
+            <a href="#que-hacemos">¿Cual es Nuestra Misión?</a>
+            <a href="#vision">¿Cual es Nuestro Propósito?</a>
+            <a href="#proyeccion">Proyección</a>
+            <a href="#consultas">Consultas</a>
+            {% if session['usuario'] %}
+                <a href="{{ url_for('logout') }}" style="color:#d32f2f;font-weight:bold;">Cerrar sesión</a>
+            {% endif %}
+        </nav>
+    </div>
+    
+    <header class="contenido">
+
+        <section id="que-hacemos" class="contenido-¿Cual es Nuestra Misión?">
+            <div class="caja-contenedor">
+                <div class="caja">
+                    <a href="{{ url_for('gestion') }}" style="text-decoration:none; color:inherit;">
+                        <h3>Donar</h3>
+                        <p>Entrega juguetes en buen estado y conviértelos en nuevas sonrisas para los niños.</p>
+                    </a>
+                </div>
+                <div class="caja">
+                    <a href="{{ url_for('gestion') }}" style="text-decoration:none; color:inherit;">
+                        <h3>Reciclar</h3>
+                        <p>Clasificamos y recuperamos juguetes para darles una segunda vida llena de alegría.</p>
+                    </a>
+                </div>
+                <div class="caja">
+                    <a href="{{ url_for('gestion') }}" style="text-decoration:none; color:inherit;">
+                        <h3>Reparar</h3>
+                        <p>Arreglamos juguetes dañados para que vuelvan a ser parte de momentos felices.</p>
+                    </a>
+                </div>
+                <div class="caja">
+                    <a href="{{ url_for('gestion') }}" style="text-decoration:none; color:inherit; display:flex; align-items:center; justify-content:center; height:100%;">
+                        <img src="{{ url_for('static', filename='img/Logo Clinica.png') }}" alt="Balón" style="width:130px;height:130px;object-fit:contain;display:block;margin:0 auto;">
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+    <section class="seccion-informativa">
+    <div class="seccion-texto-foto">
+        <img src="{{ url_for('static', filename='img/Muñeco.png') }}" alt="Foto 1" style="width:450px;height:auto;object-fit:contain;">
+        <div class="info mision">
+            <h2>Misión</h2>
+            <p>
+            La Clinica de Juguetes de la Universidad Cooperativa de Colombia tiene como misión promover la reparación, rediseño y reutilización de juguetes mediante la aplicación de conocimientos en ingeniería, fomentando la sostenibilidad, el aprendizaje práctico y el compromiso social, con el fin de generar impacto positivo en comunidades vulnerables.
+            </p>
+        </div>
+    </div>
+
+    <div class="seccion-texto-foto">
+        <div id="vision" class="info vision">
+            <h2>Visión</h2>
+            <p>
+            Para el año 2030, la Clinica de Juguetes será reconocida como un referente académico y social en la integración de la ingeniería con la responsabilidad ambiental y comunitaria, destacándose por la innovación en procesos de reutilización, la formación integral de estudiantes y la contribución al bienestar de la sociedad.
+            </p>
+        </div>
+        <img src="{{ url_for('static', filename='img/Foto 2.png') }}" alt="Foto 2" style="width:400px;height:auto;object-fit:contain;">
+    </div>
+
+    <div class="info proyeccion" id="proyeccion">
+        <h2>Proyección Social UCC</h2>
+        <p>
+        Nuestra clínica trabaja directamente con comunidades vulnerables, ofreciendo espacios de aprendizaje y colaboración para estudiantes y voluntarios comprometidos con el bienestar infantil.
+        </p>
+    </div>
+    </section>
+
+    <section id="consultas" class="Consultas">
+        <h2>Consulta tus Donaciones Aqui</h2>
+        {% if session['usuario'] %}
+            <form action="{{ url_for('ver_historial') }}" method="get" class="form-consulta">
+                <input type="hidden" name="id_donante" value="{{ id_donante }}">
+                <button type="submit">Consultar</button>
+            </form>
+        {% else %}
+            <a href="{{ url_for('login', next=url_for('ver_historial')) }}" class="btn-donar">Consultar</a>
+        {% endif %}
+    </section>
+    </header>
+</body>
+</html>

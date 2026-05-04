@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Donaciones</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/historial.css') }}">
+</head>
+<body>
+    <div class="historial-container">
+        <h2>Historial de Donaciones</h2>
+        
+        {% if error %}
+            <p style="color:red;">Error: {{ error }}</p>
+        {% endif %}
+        
+        {% if not existe %}
+            <p style="color:red;">El donante con ID {{ id_donante }} no existe o no tiene donaciones registradas.</p>
+        {% else %}
+            {% if donaciones %}
+                <ul class="donaciones-listado">
+                    {% for d in donaciones %}
+                        <li class="donacion-item">
+                            <strong>ID Donación:</strong> {{ d.id_donacion }}<br>
+                            <strong>Donante ID:</strong> {{ d.donante_id }}<br>
+                            <strong>Fecha:</strong> {{ d.fecha_donacion }}<br>
+                            <strong>Tipo:</strong> {{ d.tipo_donacion }}<br>
+                            <strong>Descripción:</strong> {{ d.descripcion }}<br>
+                            <strong>Monto:</strong> ${{ "%.2f"|format(d.monto) }}<br>
+                            <strong>Categoría:</strong> {{ d.categoria }}<br>
+                            <strong>Beneficiario:</strong> {{ d.nombre_beneficiario or "No asignado" }}<br>
+                            <strong>Edad beneficiario:</strong> {{ d.edad_beneficiario or "No registrada" }}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div style="text-align:center; margin: 20px 0;">
+                    <a href="{{ url_for('descargar_informe_donaciones') }}?id_donante={{ id_donante }}" class="btn-donar" style="display:inline-block;">
+                        Descargar informe de donaciones (Excel)
+                    </a>
+                </div>
+                <div style="text-align:center; margin: 20px 0;">
+                    <form action="{{ url_for('enviar_agradecimientos') }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-donar">Enviar agradecimientos a donantes</button>
+                    </form>
+                </div>
+            {% else %}
+                <p>No hay donaciones registradas para este donante.</p>
+            {% endif %}
+        {% endif %}
+
+        <a href="{{ url_for('home') }}">Volver al inicio</a>
+    </div>
+</body>
+</html>

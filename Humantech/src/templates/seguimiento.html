@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Seguimiento de Donación</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+</head>
+<body>
+    <h2>Seguimiento de Donación</h2>
+    {% if donacion %}
+    <ul>
+        <li><strong>ID Donación:</strong> {{ donacion.id_donacion }}</li>
+        <li><strong>Tipo:</strong> {{ donacion.tipo_donacion }}</li>
+        <li><strong>Categoría:</strong> {{ donacion.categoria }}</li>
+        <li><strong>Descripción:</strong> {{ donacion.descripcion }}</li>
+        <li><strong>Monto:</strong> {{ donacion.monto }}</li>
+        <li><strong>Fecha:</strong> {{ donacion.fecha_donacion }}</li>
+    </ul>
+    {% else %}
+    <p>No se encontró información de la donación.</p>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Donaciones</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/donacion.css') }}">
+</head>
+<body>
+    <div class="head">
+        <div class="logo">
+            <a href="{{ url_for('home') }}">Clinica de Juguetes</a>
+        </div>
+        <nav class="navegacion">
+            <a href="{{ url_for('home') }}">Inicio</a>
+            <a href="{{ url_for('home') }}#que-hacemos">¿Qué hacemos?</a>
+            <a href="{{ url_for('home') }}#consultas">Consultas</a>
+            <a href="{{ url_for('home') }}#quienes-somos">¿Quiénes somos?</a>
+            <a href="{{ url_for('home') }}#contacto">Contacto</a>
+        </nav>
+    </div>
+    <main class="gestion-donacion">
+        <h2>Deja tu Juguete Aquí</h2>
+        {% if mensaje %}
+            <p style="color:green; text-align:center;">{{ mensaje }}</p>
+        {% endif %}
+        <!-- Solo muestra los campos relevantes para la tabla donaciones -->
+        <form class="form-donacion" action="/donacion" method="POST">
+            <label for="tipo">Tipo de donación:</label>
+            <select id="tipo" name="tipo" required onchange="mostrarOpciones()">
+                <option value="">Selecciona una opción</option>
+                <option value="carros">Carros</option>
+                <option value="muñecas">Muñecas</option>
+                <option value="balones">Balones</option>
+                <option value="otros">Otros</option>
+            </select>
+
+            <div id="opcion-carros" style="display:none;">
+                <label for="categoria_carros">Categoría de carros:</label>
+                <select id="categoria_carros" name="categoria_carros">
+                    <option value="">Selecciona una categoría</option>
+                    <option value="carros_pequeños">Hotweels</option>
+                    <option value="camiones">Camiones</option>
+                    <option value="vehiculos_control_remoto">Vehículos a control remoto</option>
+                    <option value="otros_carros">Otros</option>
+                </select>
+            </div>
+
+            <div id="opcion-muñecas" style="display:none;">
+                <label for="categoria_munecas">Categoría de muñecas:</label>
+                <select id="categoria_munecas" name="categoria_munecas">
+                    <option value="">Selecciona una categoría</option>
+                    <option value="bebe">Bebé</option>
+                    <option value="muñeca">Muñecas "Glotona,Trapo,Etc"</option>
+                    <option value="peluches">Peluches</option>
+                    <option value="otros_muñecas">Otros</option>
+                </select>
+            </div>
+
+            <div id="opcion-balones" style="display:none;">
+                <label for="categoria_balones">Categoría de balones:</label>
+                <select id="categoria_balones" name="categoria_balones">
+                    <option value="">Selecciona una categoría</option>
+                    <option value="futbol">Fútbol</option>
+                    <option value="baloncesto">Baloncesto</option>
+                    <option value="voleibol">Voleibol</option>
+                    <option value="inflables">Inflables</option>
+                </select>
+            </div>
+
+            <div id="opcion-otros" style="display:none;">
+                <label for="categoria_otros">Categoría de otros:</label>
+                <select id="categoria_otros" name="categoria_otros">
+                    <option value="">Selecciona una categoría</option>
+                    <option value="">Peluches</option>
+                    <option value="juegos_de_mesa">Juegos de mesa</option>
+                    <option value="vehiculos">Vehículos</option>
+                    <option value="otros">Otros</option>
+                </select>
+            </div>
+
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
+
+            <label for="beneficiario_Cedula">Beneficiario:</label>
+            <select id="beneficiario_Cedula" name="beneficiario_Cedula" required>
+                <option value="">Selecciona un beneficiario</option>
+                {% for b in beneficiarios %}
+                    <option value="{{ b.Cedula }}">
+                        {{ b.Cedula }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="observaciones">Observaciones de seguimiento:</label>
+            <textarea id="observaciones" name="observaciones" rows="2"></textarea>
+
+            <input type="hidden" name="donante_id" value="{{ session['usuario'] }}">
+
+            <button type="submit" class="btn-donar">Donar</button>
+        </form>
+    </main>
+    <script>
+    function mostrarOpciones() {
+        var tipo = document.getElementById('tipo').value;
+        document.getElementById('opcion-carros').style.display = (tipo === 'carros') ? 'block' : 'none';
+        document.getElementById('opcion-muñecas').style.display = (tipo === 'muñecas') ? 'block' : 'none';
+        document.getElementById('opcion-balones').style.display = (tipo === 'balones') ? 'block' : 'none';
+        document.getElementById('opcion-otros').style.display = (tipo === 'otros') ? 'block' : 'none';
+    }
+    </script>
+</body>
+</html>
