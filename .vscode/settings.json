@@ -10,8 +10,8 @@
             "server": "localhost",
             "port": 3306,
             "driver": "MySQL",
-            "name": "ClinicaJuguetes",
-            "database": "sysong",
+            "name": "clinica_juguetes",
+            "database": "clinica_juguetes",
             "username": "root",
             "askForPassword": true
         }

@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Clínica de Juguetes{% endblock %}</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+
+    {% block styles %}{% endblock %}
 </head>
 <body>
     {% include 'structure/header.html' %}
@@ -30,10 +33,11 @@
             document.querySelectorAll('.flash-message').forEach(alert => {
                 alert.style.transition = 'opacity 0.5s ease';
                 alert.style.opacity = '0';
-
                 setTimeout(() => alert.remove(), 500);
             });
         }, 5000);
     </script>
+
+    {% block scripts %}{% endblock %}
 </body>
 </html>

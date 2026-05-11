@@ -14,7 +14,7 @@
     {% endif %}
     <div class="eslogan-barra">
         <span class="eslogan">¡Comparte Sonrisas, Dona un juguete Ya!</span>
-        <a href="{{ url_for('gestion') }}" class="btn-donar">Donar ya</a>
+        <a href="{{ url_for('donacion') }}" class="btn-donar">Donar ya</a>
     </div>
     <div class="head" id="inicio">
         <div class="logo">
@@ -39,25 +39,25 @@
         <section id="que-hacemos" class="contenido-¿Cual es Nuestra Misión?">
             <div class="caja-contenedor">
                 <div class="caja">
-                    <a href="{{ url_for('gestion') }}" style="text-decoration:none; color:inherit;">
+                    <a href="{{ url_for('donacion') }}" style="text-decoration:none; color:inherit;">
                         <h3>Donar</h3>
                         <p>Entrega juguetes en buen estado y conviértelos en nuevas sonrisas para los niños.</p>
                     </a>
                 </div>
                 <div class="caja">
-                    <a href="{{ url_for('gestion') }}" style="text-decoration:none; color:inherit;">
+                    <a href="{{ url_for('donacion') }}" style="text-decoration:none; color:inherit;">
                         <h3>Reciclar</h3>
                         <p>Clasificamos y recuperamos juguetes para darles una segunda vida llena de alegría.</p>
                     </a>
                 </div>
                 <div class="caja">
-                    <a href="{{ url_for('gestion') }}" style="text-decoration:none; color:inherit;">
+                    <a href="{{ url_for('donacion') }}" style="text-decoration:none; color:inherit;">
                         <h3>Reparar</h3>
                         <p>Arreglamos juguetes dañados para que vuelvan a ser parte de momentos felices.</p>
                     </a>
                 </div>
                 <div class="caja">
-                    <a href="{{ url_for('gestion') }}" style="text-decoration:none; color:inherit; display:flex; align-items:center; justify-content:center; height:100%;">
+                    <a href="{{ url_for('donacion') }}" style="text-decoration:none; color:inherit; display:flex; align-items:center; justify-content:center; height:100%;">
                         <img src="{{ url_for('static', filename='img/Logo Clinica.png') }}" alt="Balón" style="width:130px;height:130px;object-fit:contain;display:block;margin:0 auto;">
                     </a>
                 </div>
