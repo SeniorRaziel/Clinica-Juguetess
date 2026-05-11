@@ -1,52 +1,49 @@
-from flask import Flask, render_template, redirect, request, Response, session, url_for, flash, send_file
-from flask_mysqldb import MySQL, MySQLdb
-from datetime import date
-import smtplib
-from email.mime.text import MIMEText
-import io
-import pandas as pd
+from flask import Flask, render_template, redirect, request, session, url_for, flash, send_file
+from flask_mysqldb import MySQL
 import os
 import logging
-from informes import GeneradorInforme, InformeExcel
-from validaciones import ValidarMonto, ValidarDescripcion
 
-# 1. Uso de variables de entorno para configuración sensible
-app = Flask(__name__, template_folder='templates')
-app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
-app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')
-app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', '123456789')
-app.config['MYSQL_PORT'] = int(os.getenv('MYSQL_PORT', 3306))
-app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'clinica_juguetes')
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+app = Flask(__name__, template_folder="templates")
+
+app.secret_key = os.getenv("SECRET_KEY", "clinica-juguetes-secret")
+
+app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "127.0.0.1")
+app.config["MYSQL_USER"] = os.getenv("MYSQL_USER", "root")
+app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD", "123456789")
+app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", 3306))
+app.config["MYSQL_DB"] = os.getenv("MYSQL_DB", "clinica_juguetes")
+app.config["MYSQL_CURSORCLASS"] = "DictCursor"
 
 mysql = MySQL(app)
 
-# 2. Logging centralizado
-logging.basicConfig(filename='app.log', level=logging.ERROR)
+logging.basicConfig(filename="app.log", level=logging.ERROR)
 
-# 3. Modularización de funciones auxiliares
-def obtener_beneficiarios():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM beneficiarios")
-    beneficiarios = cur.fetchall()
-    cur.close()
-    return beneficiarios
 
-def obtener_donante_por_cedula(cedula):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM donantes WHERE Cedula_Donante=%s", (cedula,))
-    donante = cur.fetchone()
-    cur.close()
-    return donante
+@app.before_request
+def before_request():
+    try:
+        mysql.connection.ping()
+    except Exception as e:
+        print("Error de reconexión:", e)
+
+
+def usuario_actual_id():
+    return session.get("usuario_id")
+
+
+def login_requerido():
+    if "usuario_id" not in session:
+        flash("Debes iniciar sesión para continuar.", "warning")
+        return False
+    return True
+
 
 def validar_registro(form):
     errores = []
 
     cedula = form.get("Cedula_Donante", "").strip()
     primer_nombre = form.get("primer_nombre", "").strip()
-    segundo_nombre = form.get("segundo_nombre", "").strip()
     primer_apellido = form.get("primer_apellido", "").strip()
-    segundo_apellido = form.get("segundo_apellido", "").strip()
     contacto = form.get("contacto", "").strip()
     clave = form.get("clave", "")
     clave2 = form.get("clave2", "")
@@ -58,30 +55,16 @@ def validar_registro(form):
     elif len(cedula) < 6 or len(cedula) > 12:
         errores.append("La cédula debe tener entre 6 y 12 dígitos.")
 
-    if not primer_nombre:
-        errores.append("El primer nombre es obligatorio.")
-    elif len(primer_nombre) < 2:
+    if not primer_nombre or len(primer_nombre) < 2:
         errores.append("El primer nombre debe tener mínimo 2 caracteres.")
 
-    if segundo_nombre and len(segundo_nombre) < 2:
-        errores.append("El segundo nombre debe tener mínimo 2 caracteres.")
-
-    if not primer_apellido:
-        errores.append("El primer apellido es obligatorio.")
-    elif len(primer_apellido) < 2:
+    if not primer_apellido or len(primer_apellido) < 2:
         errores.append("El primer apellido debe tener mínimo 2 caracteres.")
 
-    if segundo_apellido and len(segundo_apellido) < 2:
-        errores.append("El segundo apellido debe tener mínimo 2 caracteres.")
-
-    if not contacto:
-        errores.append("El contacto es obligatorio.")
-    elif len(contacto) < 7:
+    if not contacto or len(contacto) < 7:
         errores.append("El contacto debe tener mínimo 7 caracteres.")
 
-    if not clave:
-        errores.append("La contraseña es obligatoria.")
-    elif len(clave) < 6:
+    if not clave or len(clave) < 6:
         errores.append("La contraseña debe tener mínimo 6 caracteres.")
 
     if clave != clave2:
@@ -89,30 +72,20 @@ def validar_registro(form):
 
     return len(errores) == 0, errores
 
-def validar_donacion_form(form):
-    campos = ['tipo', 'descripcion', 'beneficiario_Cedula']
-    for campo in campos:
-        if not form.get(campo):
-            return False, f"El campo {campo} es obligatorio."
-    return True, ""
-
 
 def obtener_categoria_donacion(form):
     tipo = form.get("tipo_donacion", "")
 
-    categorias_por_tipo = {
+    campos = {
         "carros": "categoria_carros",
         "munecas": "categoria_munecas",
         "balones": "categoria_balones",
-        "otros": "categoria_otros"
+        "otros": "categoria_otros",
     }
 
-    campo_categoria = categorias_por_tipo.get(tipo)
+    campo = campos.get(tipo)
+    return form.get(campo, "").strip() if campo else ""
 
-    if not campo_categoria:
-        return ""
-
-    return form.get(campo_categoria, "").strip()
 
 def validar_donacion(form):
     errores = []
@@ -126,11 +99,9 @@ def validar_donacion(form):
         errores.append("Debes seleccionar un tipo de donación.")
 
     if tipo_donacion and not categoria:
-        errores.append("Debes seleccionar una categoría para la donación.")
+        errores.append("Debes seleccionar una categoría.")
 
-    if not descripcion:
-        errores.append("La descripción es obligatoria.")
-    elif len(descripcion) < 5:
+    if not descripcion or len(descripcion) < 5:
         errores.append("La descripción debe tener mínimo 5 caracteres.")
 
     if not beneficiario_id:
@@ -138,53 +109,58 @@ def validar_donacion(form):
 
     return len(errores) == 0, errores
 
-# Reintento de conexión antes de cada request
-@app.before_request
-def before_request():
-    try:
-        mysql.connection.ping()
-    except Exception as e:
-        print("Error de reconexión:", e)
 
-@app.route('/')
+def obtener_beneficiarios():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id, nombre, documento FROM beneficiarios ORDER BY nombre")
+    beneficiarios = cur.fetchall()
+    cur.close()
+    return beneficiarios
+
+
+@app.route("/")
 def home():
-    id_donante = None
-    if 'usuario' in session:
-        cur = mysql.connection.cursor()
-        # CAMBIO: buscar por Cedula_Donante, no por contacto
-        cur.execute("SELECT Cedula_Donante FROM donantes WHERE Cedula_Donante=%s", (session['usuario'],))
-        donante = cur.fetchone()
-        cur.close()
-        if donante:
-            id_donante = donante['Cedula_Donante']
-    return render_template('home.html', id_donante=id_donante)
+    return render_template("home.html")
 
-@app.route('/login', methods=['GET', 'POST'])
+
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    next_page = request.args.get('next')
+    next_page = request.args.get("next")
+
     if request.method == "POST":
-        cedula_donante = request.form['Cedula_Donante']
-        clave = request.form['clave']
+        cedula = request.form.get("Cedula_Donante", "").strip()
+        clave = request.form.get("clave", "")
+
         try:
-            mysql.connection.ping()
             cur = mysql.connection.cursor()
-            try:
-                cur.execute("SELECT * FROM donantes WHERE Cedula_Donante=%s", (cedula_donante,))
-                usuario = cur.fetchone()
-                if not usuario:
-                    return render_template("login.html", error="El usuario con esa cédula no existe.")
-                # Si existe, ahora verifica la clave
-                if usuario['clave'] != clave:
-                    return render_template("login.html", error="Contraseña incorrecta.")
-                session['usuario'] = usuario['Cedula_Donante']
-                return redirect(next_page or url_for('home'))
-            finally:
-                cur.close()
+            cur.execute("SELECT * FROM usuarios WHERE cedula = %s", (cedula,))
+            usuario = cur.fetchone()
+            cur.close()
+
+            if not usuario:
+                flash("El usuario con esa cédula no existe.", "error")
+                return render_template("login.html")
+
+            if usuario["clave"] != clave:
+                flash("Contraseña incorrecta.", "error")
+                return render_template("login.html")
+
+            session["usuario_id"] = usuario["id"]
+            session["usuario_cedula"] = usuario["cedula"]
+            session["usuario_nombre"] = usuario["primer_nombre"]
+            session["usuario_rol"] = usuario["rol"]
+
+            flash(f"Bienvenido, {usuario['primer_nombre']}.", "success")
+            return redirect(next_page or url_for("home"))
+
         except Exception as e:
-            return render_template("login.html", error=str(e))
+            logging.exception("Error en login")
+            flash(f"Error al iniciar sesión: {str(e)}", "error")
+
     return render_template("login.html")
 
-@app.route('/registro', methods=['GET', 'POST'])
+
+@app.route("/registro", methods=["GET", "POST"])
 def registro():
     datos = {}
 
@@ -195,7 +171,7 @@ def registro():
             "segundo_nombre": request.form.get("segundo_nombre", "").strip(),
             "primer_apellido": request.form.get("primer_apellido", "").strip(),
             "segundo_apellido": request.form.get("segundo_apellido", "").strip(),
-            "contacto": request.form.get("contacto", "").strip()
+            "contacto": request.form.get("contacto", "").strip(),
         }
 
         valido, errores = validar_registro(request.form)
@@ -203,35 +179,31 @@ def registro():
         if not valido:
             for error in errores:
                 flash(error, "error")
-
             return render_template("register.html", datos=datos)
 
         try:
             cur = mysql.connection.cursor()
 
-            cur.execute(
-                "SELECT Cedula_Donante FROM donantes WHERE Cedula_Donante = %s",
-                (datos["Cedula_Donante"],)
-            )
+            cur.execute("SELECT id FROM usuarios WHERE cedula = %s", (datos["Cedula_Donante"],))
+            usuario_existente = cur.fetchone()
 
-            donante_existente = cur.fetchone()
-
-            if donante_existente:
+            if usuario_existente:
                 cur.close()
                 flash("Ya existe un usuario registrado con esa cédula.", "warning")
                 return render_template("register.html", datos=datos)
 
             cur.execute("""
-                INSERT INTO donantes (
-                    Cedula_Donante,
+                INSERT INTO usuarios (
+                    cedula,
                     primer_nombre,
                     segundo_nombre,
                     primer_apellido,
                     segundo_apellido,
                     contacto,
-                    clave
+                    clave,
+                    rol
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, 'donante')
             """, (
                 datos["Cedula_Donante"],
                 datos["primer_nombre"],
@@ -239,7 +211,7 @@ def registro():
                 datos["primer_apellido"],
                 datos["segundo_apellido"],
                 datos["contacto"],
-                request.form.get("clave")
+                request.form.get("clave"),
             ))
 
             mysql.connection.commit()
@@ -255,22 +227,19 @@ def registro():
 
     return render_template("register.html", datos=datos)
 
-@app.route('/donacion', methods=['GET', 'POST'])
+
+@app.route("/donacion", methods=["GET", "POST"])
 def donacion():
-    if "usuario" not in session:
-        flash("Debes iniciar sesión para registrar una donación.", "warning")
-        return redirect(url_for("login"))
+    if not login_requerido():
+        return redirect(url_for("login", next=request.url))
 
     datos = {}
-
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT Cedula FROM beneficiarios")
-    beneficiarios = cur.fetchall()
-    cur.close()
+    beneficiarios = obtener_beneficiarios()
+    categorias = obtener_categorias_activas()
 
     if request.method == "POST":
         datos = {
-            "tipo_donacion": request.form.get("tipo_donacion", "").strip(),
+            "categoria_id": request.form.get("categoria_id", "").strip(),
             "descripcion": request.form.get("descripcion", "").strip(),
             "beneficiario_id": request.form.get("beneficiario_id", "").strip(),
         }
@@ -282,167 +251,398 @@ def donacion():
         if not valido:
             for error in errores:
                 flash(error, "error")
-
-            return render_template(
-                "gestion_donacion.html",
-                datos=datos,
-                beneficiarios=beneficiarios
-            )
+            return render_template("gestion_donacion.html", datos=datos, beneficiarios=beneficiarios)
 
         try:
+            codigo_barras = f"JUG-{session['usuario_id']}-{os.urandom(3).hex().upper()}"
+
             cur = mysql.connection.cursor()
 
             cur.execute("""
-                INSERT INTO donaciones (
-                    beneficiario_id,
-                    donante_id,
-                    fecha_donacion,
-                    tipo_donacion,
+                INSERT INTO juguetes (
+                    codigo_barras,
+                    nombre,
+                    categoria_id,
                     descripcion,
-                    monto,
-                    categoria
+                    estado_actual,
+                    donante_id
                 )
-                VALUES (%s, %s, CURDATE(), %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, 'registrado', %s)
             """, (
-                datos["beneficiario_id"],
-                session["usuario"],
-                datos["tipo_donacion"],
+                codigo_barras,
+                "Juguete donado",
+                datos["categoria_id"],
                 datos["descripcion"],
-                0,
-                categoria
+                session["usuario_id"],
+            ))
+
+            juguete_id = cur.lastrowid
+
+            cur.execute("""
+                INSERT INTO historial_estados_juguete (
+                    juguete_id,
+                    estado_anterior,
+                    estado_nuevo,
+                    observacion,
+                    usuario_id
+                )
+                VALUES (%s, NULL, 'registrado', %s, %s)
+            """, (
+                juguete_id,
+                "Juguete registrado en el sistema.",
+                session["usuario_id"],
             ))
 
             mysql.connection.commit()
             cur.close()
 
-            flash("Donación registrada correctamente.", "success")
-            return redirect(url_for("donacion"))
+            flash(f"Juguete registrado correctamente. Código: {codigo_barras}", "success")
+            return redirect(url_for("historial"))
 
         except Exception as e:
-            logging.exception("Error registrando donación")
+            logging.exception("Error registrando juguete")
             flash(f"Error técnico al registrar donación: {str(e)}", "error")
+            return render_template("gestion_donacion.html", datos=datos, beneficiarios=beneficiarios)
 
-            return render_template(
-                "gestion_donacion.html",
-                datos=datos,
-                beneficiarios=beneficiarios
+    return render_template("gestion_donacion.html", datos=datos, beneficiarios=beneficiarios)
+
+@app.route("/historial")
+def historial():
+    if "usuario_id" not in session:
+        flash("Debes iniciar sesión para consultar el historial.", "warning")
+        return redirect(url_for("login", next=request.url))
+
+    estado = request.args.get("estado", "").strip()
+    donante = request.args.get("donante", "").strip()
+    beneficiario = request.args.get("beneficiario", "").strip()
+
+    try:
+        cur = mysql.connection.cursor()
+
+        query = """
+            SELECT
+                j.id,
+                j.codigo_barras,
+                j.nombre,
+                j.categoria,
+                j.descripcion,
+                j.estado_actual,
+                j.fecha_recepcion,
+
+                donante.primer_nombre AS donante_nombre,
+                donante.primer_apellido AS donante_apellido,
+                donante.cedula AS donante_cedula,
+
+                b.nombre AS beneficiario_nombre,
+                b.documento AS beneficiario_documento,
+                e.lugar_entrega,
+                e.fecha_entrega
+
+            FROM juguetes j
+            INNER JOIN usuarios donante ON donante.id = j.donante_id
+            LEFT JOIN entregas e ON e.juguete_id = j.id
+            LEFT JOIN beneficiarios b ON b.id = e.beneficiario_id
+            WHERE 1 = 1
+        """
+
+        params = []
+
+        if session.get("usuario_rol") != "admin":
+            query += " AND j.donante_id = %s"
+            params.append(session["usuario_id"])
+
+        if estado:
+            query += " AND j.estado_actual = %s"
+            params.append(estado)
+
+        if donante:
+            query += """
+                AND (
+                    donante.cedula LIKE %s
+                    OR donante.primer_nombre LIKE %s
+                    OR donante.primer_apellido LIKE %s
+                )
+            """
+            like_donante = f"%{donante}%"
+            params.extend([like_donante, like_donante, like_donante])
+
+        if beneficiario:
+            query += """
+                AND (
+                    b.nombre LIKE %s
+                    OR b.documento LIKE %s
+                )
+            """
+            like_beneficiario = f"%{beneficiario}%"
+            params.extend([like_beneficiario, like_beneficiario])
+
+        query += " ORDER BY j.fecha_recepcion DESC"
+
+        cur.execute(query, tuple(params))
+        juguetes = cur.fetchall()
+        cur.close()
+
+        filtros = {
+            "estado": estado,
+            "donante": donante,
+            "beneficiario": beneficiario,
+        }
+
+        return render_template(
+            "historial.html",
+            juguetes=juguetes,
+            filtros=filtros
+        )
+
+    except Exception as e:
+        logging.exception("Error cargando historial")
+        flash(f"Error al cargar historial: {str(e)}", "error")
+        return render_template("historial.html", juguetes=[], filtros={})
+
+@app.route("/juguetes/<int:juguete_id>/estado", methods=["POST"])
+def actualizar_estado_juguete(juguete_id):
+    if not login_requerido():
+        return redirect(url_for("login"))
+
+    nuevo_estado = request.form.get("estado", "").strip()
+    observacion = request.form.get("observacion", "").strip()
+
+    estados_validos = [
+        "registrado",
+        "en_revision",
+        "en_reparacion",
+        "reparado",
+        "listo_para_entrega",
+        "entregado",
+        "descartado",
+    ]
+
+    if nuevo_estado not in estados_validos:
+        flash("Estado no válido.", "error")
+        return redirect(url_for("historial"))
+
+    try:
+        cur = mysql.connection.cursor()
+
+        cur.execute("SELECT estado_actual FROM juguetes WHERE id = %s", (juguete_id,))
+        juguete = cur.fetchone()
+
+        if not juguete:
+            cur.close()
+            flash("El juguete no existe.", "error")
+            return redirect(url_for("historial"))
+
+        estado_anterior = juguete["estado_actual"]
+
+        cur.execute("""
+            UPDATE juguetes
+            SET estado_actual = %s
+            WHERE id = %s
+        """, (nuevo_estado, juguete_id))
+
+        cur.execute("""
+            INSERT INTO historial_estados_juguete (
+                juguete_id,
+                estado_anterior,
+                estado_nuevo,
+                observacion,
+                usuario_id
             )
+            VALUES (%s, %s, %s, %s, %s)
+        """, (
+            juguete_id,
+            estado_anterior,
+            nuevo_estado,
+            observacion,
+            session["usuario_id"],
+        ))
+
+        mysql.connection.commit()
+        cur.close()
+
+        flash("Estado actualizado correctamente.", "success")
+
+    except Exception as e:
+        logging.exception("Error actualizando estado")
+        flash(f"Error al actualizar estado: {str(e)}", "error")
+
+    return redirect(url_for("historial"))
+
+@app.route("/categorias", methods=["GET", "POST"])
+def categorias():
+    if session.get("usuario_rol") != "admin":
+        flash("No tienes permisos para administrar categorías.", "error")
+        return redirect(url_for("home"))
+
+    if request.method == "POST":
+        nombre = request.form.get("nombre", "").strip()
+
+        if not nombre or len(nombre) < 2:
+            flash("El nombre debe tener mínimo 2 caracteres.", "error")
+            return redirect(url_for("categorias"))
+
+        try:
+            cur = mysql.connection.cursor()
+
+            cur.execute("""
+                INSERT INTO categorias (nombre, activa)
+                VALUES (%s, TRUE)
+            """, (nombre,))
+
+            mysql.connection.commit()
+            cur.close()
+
+            flash("Categoría creada correctamente.", "success")
+
+        except Exception as e:
+            logging.exception("Error creando categoría")
+            flash(f"Error creando categoría: {str(e)}", "error")
+
+        return redirect(url_for("categorias"))
+
+    nombre = request.args.get("nombre", "").strip()
+    estado = request.args.get("estado", "").strip()
+
+    query = """
+        SELECT
+            id,
+            nombre,
+            activa,
+            creado_en
+        FROM categorias
+        WHERE 1 = 1
+    """
+
+    params = []
+
+    if nombre:
+        query += " AND LOWER(nombre) LIKE LOWER(%s)"
+        params.append(f"%{nombre}%")
+
+    if estado == "activas":
+        query += " AND activa = TRUE"
+
+    elif estado == "inactivas":
+        query += " AND activa = FALSE"
+
+    query += " ORDER BY activa DESC, nombre ASC"
+
+    cur = mysql.connection.cursor()
+    cur.execute(query, tuple(params))
+
+    categorias = cur.fetchall()
+
+    cur.close()
+
+    filtros = {
+        "nombre": nombre,
+        "estado": estado
+    }
 
     return render_template(
-        "gestion_donacion.html",
-        datos=datos,
-        beneficiarios=beneficiarios
+        "categorias.html",
+        categorias=categorias,
+        filtros=filtros
     )
 
-@app.route('/historial', methods=['GET'])
-def ver_historial():
-    if 'usuario' not in session:
-        return redirect(url_for('login', next=request.url))
-    id_donante = request.args.get('id_donante')
-    if not id_donante:
-        return render_template('historial.html', existe=None, donaciones=[], id_donante=None)
+@app.route("/categorias/<int:categoria_id>/editar", methods=["POST"])
+def editar_categoria(categoria_id):
+    if session.get("usuario_rol") != "admin":
+        flash("No tienes permisos para editar categorías.", "error")
+        return redirect(url_for("home"))
+
+    nombre = request.form.get("nombre", "").strip()
+    activa = request.form.get("activa") == "1"
+
+    if not nombre or len(nombre) < 2:
+        flash("El nombre de la categoría debe tener mínimo 2 caracteres.", "error")
+        return redirect(url_for("categorias"))
+
+    slug = generar_slug(nombre)
+
     try:
-        mysql.connection.ping()
         cur = mysql.connection.cursor()
-        try:
-            cur.execute("SELECT * FROM donantes WHERE Cedula_Donante = %s", (id_donante,))
-            donante = cur.fetchone()
-            if not donante:
-                return render_template('historial.html', existe=False, donaciones=[], id_donante=id_donante)
-            cur.execute("""
-                SELECT d.*, 
-                       b.primer_nombre AS nombre_beneficiario, 
-                       b.edad AS edad_beneficiario
-                FROM donaciones d
-                LEFT JOIN beneficiarios b ON d.beneficiario_Cedula = b.Cedula
-                WHERE d.donante_id = %s
-            """, (id_donante,))
-            donaciones = cur.fetchall()
-        finally:
-            cur.close()
-        return render_template('historial.html', existe=True, donaciones=donaciones, id_donante=id_donante)
+        cur.execute("""
+            UPDATE categorias
+            SET nombre = %s,
+                slug = %s,
+                activa = %s
+            WHERE id = %s
+        """, (nombre, slug, activa, categoria_id))
+
+        mysql.connection.commit()
+        cur.close()
+
+        flash("Categoría actualizada correctamente.", "success")
+
     except Exception as e:
-        print("ERROR EN HISTORIAL:", e)
-        return render_template('historial.html', existe=False, donaciones=[], id_donante=id_donante, error=str(e))
+        logging.exception("Error actualizando categoría")
+        flash(f"Error actualizando categoría: {str(e)}", "error")
 
-@app.route('/enviar-agradecimientos', methods=['POST'])
-def enviar_agradecimientos():
+    return redirect(url_for("categorias"))
+
+def obtener_categorias_activas():
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT DISTINCT d.contacto, d.primer_nombre
-        FROM donantes d
-        JOIN donaciones don ON d.Cedula_Donante = don.donante_id
+        SELECT id, nombre, slug
+        FROM categorias
+        WHERE activa = TRUE
+        ORDER BY nombre
     """)
-    donantes = cur.fetchall()
+    categorias = cur.fetchall()
     cur.close()
+    return categorias
 
-    remitente = ""
-    password = ""
-    asunto = "¡Gracias por tu donación!"
-    for donante in donantes:
-        destinatario = donante['contacto']
-        nombre = donante['primer_nombre']
-        cuerpo = f"Estimado/a {nombre},\n\nGracias por tu generosa donación. Tu ayuda ha beneficiado a personas que lo necesitaban. ¡Juntos transformamos vidas!\n\nClinica de Juguetes"
-        msg = MIMEText(cuerpo)
-        msg['Subject'] = asunto
-        msg['From'] = remitente
-        msg['To'] = destinatario
-        try:
-            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-                server.login(remitente, password)
-                server.sendmail(remitente, destinatario, msg.as_string())
-        except Exception as e:
-            print(f"Error enviando correo a {destinatario}: {e}")
 
-    flash("¡Agradecimientos enviados a todos los donantes!")
-    return redirect(url_for('home'))
-
-@app.route('/descargar-informe-donaciones')
-def descargar_informe_donaciones():
-    id_donante = request.args.get('id_donante')
-    if not id_donante:
-        flash("No se especificó el donante.")
-        return redirect(url_for('home'))
-
+def obtener_categorias():
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT d.id_donacion, d.tipo_donacion, d.categoria, d.descripcion, d.monto, d.fecha_donacion,
-               b.primer_nombre AS nombre_beneficiario, b.primer_apellido AS apellido_beneficiario, b.edad AS edad_beneficiario
-        FROM donaciones d
-        LEFT JOIN beneficiarios b ON d.beneficiario_Cedula = b.Cedula
-        WHERE d.donante_id = %s
-    """, (id_donante,))
-    donaciones = cur.fetchall()
+        SELECT id, nombre, slug, activa, creado_en
+        FROM categorias
+        ORDER BY activa DESC, nombre
+    """)
+    categorias = cur.fetchall()
     cur.close()
+    return categorias
 
-    import os
-    if not os.path.exists('informes'):
-        os.makedirs('informes')
-    ruta_archivo = os.path.join('informes', f'informe_donaciones_{id_donante}.xlsx')
 
-    # Uso del patrón Strategy para generación de informes
-    generador = GeneradorInforme(InformeExcel())
-    generador.generar(donaciones, ruta_archivo)
+def generar_slug(texto):
+    return (
+        texto.strip()
+        .lower()
+        .replace("á", "a")
+        .replace("é", "e")
+        .replace("í", "i")
+        .replace("ó", "o")
+        .replace("ú", "u")
+        .replace("ñ", "n")
+        .replace(" ", "_")
+    )
 
-    return send_file(ruta_archivo, download_name=f"informe_donaciones_{id_donante}.xlsx", as_attachment=True)
+def validar_donacion(form):
+    errores = []
 
-@app.route('/logout')
+    categoria_id = form.get("categoria_id", "").strip()
+    descripcion = form.get("descripcion", "").strip()
+    beneficiario_id = form.get("beneficiario_id", "").strip()
+
+    if not categoria_id:
+        errores.append("Debes seleccionar una categoría.")
+
+    if not descripcion or len(descripcion) < 5:
+        errores.append("La descripción debe tener mínimo 5 caracteres.")
+
+    if not beneficiario_id:
+        errores.append("Debes seleccionar un beneficiario.")
+
+    return len(errores) == 0, errores
+
+@app.route("/logout")
 def logout():
     session.clear()
-    return redirect(url_for('home'))
+    flash("Sesión cerrada correctamente.", "info")
+    return redirect(url_for("home"))
 
-@app.route('/verificar-cedulas')
-def verificar_cedulas():
-    cur = mysql.connection.cursor()
-    cur.execute("""
-        SELECT d.Cedula_Donante, don.donante_id, d.primer_nombre, d.segundo_nombre, don.id_donacion
-        FROM donantes d
-        JOIN donaciones don ON d.Cedula_Donante = don.donante_id
-    """)
-    coincidencias = cur.fetchall()
-    cur.close()
-    return render_template('verificar_cedulas.html', coincidencias=coincidencias)
 
-if __name__ == '__main__':
-    app.secret_key = "sysong"
-    app.run(debug=True, host='0.0.0.0', port=5001, threaded=True)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5001, threaded=True)

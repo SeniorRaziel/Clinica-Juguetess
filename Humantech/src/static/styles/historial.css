@@ -1,92 +1,248 @@
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #f6f8fa;
-    margin: 0;
-    padding: 0;
+    background: #f4f8fb;
 }
 
-h2 {
-    text-align: center;
-    margin-top: 30px;
-    color: #1a73e8;
-}
+/* CONTENEDOR PRINCIPAL */
 
 .historial-container {
-    max-width: 900px;
+    width: 95%;
+    max-width: 1400px;
+
     margin: 40px auto;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    padding: 30px 40px;
+    padding: 20px;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background: #fafbfc;
-}
-
-th, td {
-    padding: 12px 10px;
+.historial-container h2 {
     text-align: center;
+    color: #1e88e5;
+    margin-bottom: 35px;
+    font-size: 36px;
 }
 
-th {
-    background: #1a73e8;
-    color: #fff;
-    font-weight: 600;
-}
-
-tr:nth-child(even) {
-    background: #f1f3f4;
-}
-
-tr:hover {
-    background: #e3f0fc;
-}
-
-a {
-    display: inline-block;
-    margin-top: 25px;
-    padding: 10px 24px;
-    background: #1a73e8;
-    color: #fff;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background 0.2s;
-}
-
-a:hover {
-    background: #155ab6;
-}
-
-p {
-    text-align: center;
-    font-size: 1.1em;
-    margin-top: 30px;
-}
-
-.error {
-    color: #d32f2f;
-    font-weight: bold;
-    text-align: center;
-}
+/* GRID DE JUGUETES */
 
 .donaciones-listado {
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+
+    gap: 25px;
+
     list-style: none;
     padding: 0;
 }
 
+/* CARD */
+
 .donacion-item {
-    background: #f1f3f4;
-    border-radius: 8px;
-    margin-bottom: 18px;
-    padding: 18px 20px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    font-size: 1.05em;
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 24px;
+
+    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+
+    transition: transform 0.2s ease,
+                box-shadow 0.2s ease;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
+
+.donacion-item:hover {
+    transform: translateY(-4px);
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+/* TITULOS */
+
 .donacion-item strong {
-    color: #1a73e8;
+    color: #1e88e5;
+}
+
+/* BADGES ESTADOS */
+
+.estado {
+    display: inline-block;
+
+    width: fit-content;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    margin-top: 4px;
+}
+
+/* COLORES ESTADOS */
+
+.estado-registrado {
+    background: #546e7a;
+}
+
+.estado-en_revision {
+    background: #fb8c00;
+}
+
+.estado-en_reparacion {
+    background: #8e24aa;
+}
+
+.estado-reparado {
+    background: #1e88e5;
+}
+
+.estado-listo_para_entrega {
+    background: #00897b;
+}
+
+.estado-entregado {
+    background: #43a047;
+}
+
+.estado-descartado {
+    background: #e53935;
+}
+
+/* FORM ADMIN */
+
+.estado-form {
+    margin-top: 15px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid #eee;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.estado-form select,
+.estado-form textarea {
+    width: 100%;
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+    border: 1px solid #ccc;
+
+    font-size: 14px;
+
+    resize: vertical;
+}
+
+.estado-form textarea {
+    min-height: 70px;
+}
+
+/* BOTON */
+
+.btn-donar {
+    background: #1e88e5;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.btn-donar:hover {
+    background: #1565c0;
+}
+
+/* EMPTY STATE */
+
+.empty-state {
+    text-align: center;
+
+    margin-top: 60px;
+
+    color: #666;
+
+    font-size: 18px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+
+    .historial-container h2 {
+        font-size: 28px;
+    }
+
+    .donaciones-listado {
+        grid-template-columns: 1fr;
+    }
+}
+
+.filtros-historial {
+    background: white;
+    border-radius: 18px;
+    padding: 22px;
+    margin: 0 auto 30px;
+    max-width: 1100px;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+
+    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+}
+
+.filtros-historial label {
+    display: block;
+    margin-bottom: 8px;
+    color: #1e88e5;
+    font-weight: bold;
+}
+
+.filtros-historial input,
+.filtros-historial select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background: #f7fafc;
+    font-size: 14px;
+}
+
+.filtros-acciones {
+    display: flex;
+    align-items: end;
+    gap: 10px;
+}
+
+.btn-limpiar {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    background: #eceff1;
+    color: #263238;
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-weight: bold;
+}
+
+.btn-limpiar:hover {
+    background: #cfd8dc;
 }

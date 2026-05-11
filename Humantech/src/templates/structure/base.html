@@ -9,8 +9,10 @@
 
     {% block styles %}{% endblock %}
 </head>
-<body>
-    {% include 'structure/header.html' %}
+<body class="{% block body_class %}{% endblock %}">
+    {% block header %}
+       {% include 'structure/header.html' %}
+    {% endblock %}
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}

@@ -27,15 +27,24 @@
         }, 5000);
     </script>
 
-    <div class="head">
-        <div class="logo">
-            <a href="{{ url_for('home') }}">Clinica de Juguetes</a>
+    <header class="app-header">
+        <div class="app-header-logo">
+            <a href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='img/logo_ucc_2018(CURVAS)-01.jpg') }}" alt="Logo UCC">
+            </a>
         </div>
-        <nav class="navegacion">
+    
+        <nav class="app-nav">
             <a href="{{ url_for('home') }}">Inicio</a>
-            <a href="{{ url_for('home') }}#que-hacemos">¿Qué hacemos?</a>
-            <a href="{{ url_for('home') }}#consultas">Consultas</a>
-            <a href="{{ url_for('home') }}#quienes-somos">¿Quiénes somos?</a>
-            <a href="{{ url_for('home') }}#contacto">Contacto</a>
+            <a href="{{ url_for('historial') }}">Historial</a>
+            <a href="{{ url_for('donacion') }}">Donar</a>
+
+            {% if session.get('usuario_rol') == 'admin' %}
+                <a href="{{ url_for('categorias') }}">Categorías</a>
+            {% endif %}
+    
+            {% if session.get('usuario_id') %}
+                <a href="{{ url_for('logout') }}" class="logout-link">Cerrar sesión</a>
+            {% endif %}
         </nav>
-    </div>
+    </header>

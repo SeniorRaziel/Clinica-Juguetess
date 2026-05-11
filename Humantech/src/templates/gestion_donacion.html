@@ -12,58 +12,17 @@
     <h2>Deja tu Juguete Aquí</h2>
 
     <form class="form-donacion" action="{{ url_for('donacion') }}" method="POST">
-        <label for="tipo_donacion">Tipo de donación:</label>
-        <select id="tipo_donacion" name="tipo_donacion" required onchange="mostrarOpciones()">
-            <option value="">Selecciona una opción</option>
-            <option value="carros" {% if datos.get('tipo_donacion') == 'carros' %}selected{% endif %}>Carros</option>
-            <option value="munecas" {% if datos.get('tipo_donacion') == 'munecas' %}selected{% endif %}>Muñecas</option>
-            <option value="balones" {% if datos.get('tipo_donacion') == 'balones' %}selected{% endif %}>Balones</option>
-            <option value="otros" {% if datos.get('tipo_donacion') == 'otros' %}selected{% endif %}>Otros</option>
+        <label for="categoria_id">Categoría del juguete:</label>
+        <select id="categoria_id" name="categoria_id" required>
+            <option value="">Selecciona una categoría</option>
+        
+            {% for categoria in categorias %}
+                <option value="{{ categoria.id }}"
+                    {% if datos.get('categoria_id') == categoria.id|string %}selected{% endif %}>
+                    {{ categoria.nombre }}
+                </option>
+            {% endfor %}
         </select>
-
-        <div id="opcion-carros" style="display:none;">
-            <label for="categoria_carros">Categoría de carros:</label>
-            <select id="categoria_carros" name="categoria_carros">
-                <option value="">Selecciona una categoría</option>
-                <option value="hotwheels">Hot Wheels</option>
-                <option value="camiones">Camiones</option>
-                <option value="vehiculos_control_remoto">Vehículos a control remoto</option>
-                <option value="otros_carros">Otros</option>
-            </select>
-        </div>
-
-        <div id="opcion-munecas" style="display:none;">
-            <label for="categoria_munecas">Categoría de muñecas:</label>
-            <select id="categoria_munecas" name="categoria_munecas">
-                <option value="">Selecciona una categoría</option>
-                <option value="bebe">Bebé</option>
-                <option value="muneca">Muñeca</option>
-                <option value="peluches">Peluches</option>
-                <option value="otros_munecas">Otros</option>
-            </select>
-        </div>
-
-        <div id="opcion-balones" style="display:none;">
-            <label for="categoria_balones">Categoría de balones:</label>
-            <select id="categoria_balones" name="categoria_balones">
-                <option value="">Selecciona una categoría</option>
-                <option value="futbol">Fútbol</option>
-                <option value="baloncesto">Baloncesto</option>
-                <option value="voleibol">Voleibol</option>
-                <option value="inflables">Inflables</option>
-            </select>
-        </div>
-
-        <div id="opcion-otros" style="display:none;">
-            <label for="categoria_otros">Categoría de otros:</label>
-            <select id="categoria_otros" name="categoria_otros">
-                <option value="">Selecciona una categoría</option>
-                <option value="peluches">Peluches</option>
-                <option value="juegos_de_mesa">Juegos de mesa</option>
-                <option value="vehiculos">Vehículos</option>
-                <option value="otros">Otros</option>
-            </select>
-        </div>
 
         <label for="descripcion">Descripción:</label>
         <textarea id="descripcion"
@@ -72,16 +31,17 @@
                   required
                   minlength="5">{{ datos.get('descripcion', '') }}</textarea>
 
-        <label for="beneficiario_id">Beneficiario:</label>
-        <select id="beneficiario_id" name="beneficiario_id" required>
-            <option value="">Selecciona un beneficiario</option>
-            {% for b in beneficiarios %}
-                <option value="{{ b.Cedula }}"
-                    {% if datos.get('beneficiario_id') == b.Cedula|string %}selected{% endif %}>
-                    {{ b.Cedula }}
-                </option>
-            {% endfor %}
-        </select>
+                  <label for="beneficiario_id">Beneficiario:</label>
+                  <select id="beneficiario_id" name="beneficiario_id" required>
+                      <option value="">Selecciona un beneficiario</option>
+                  
+                      {% for beneficiario in beneficiarios %}
+                          <option value="{{ beneficiario.id }}"
+                              {% if datos.get('beneficiario_id') == beneficiario.id|string %}selected{% endif %}>
+                              {{ beneficiario.nombre }}{% if beneficiario.documento %} - {{ beneficiario.documento }}{% endif %}
+                          </option>
+                      {% endfor %}
+                  </select>
 
         <button type="submit" class="btn-donar">Donar</button>
     </form>

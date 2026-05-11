@@ -1,0 +1,89 @@
+{% extends 'structure/base.html' %}
+
+{% block title %}Categorías | Clínica de Juguetes{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/categorias.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="categorias-container">
+    <h2>Administrar Categorías</h2>
+
+    <form class="categoria-form filtros-form"
+          method="GET"
+          action="{{ url_for('categorias') }}">
+
+        <input
+            type="text"
+            name="nombre"
+            placeholder="Buscar categoría..."
+            value="{{ filtros.get('nombre', '') }}"
+        >
+
+        <select name="estado">
+            <option value="">Todos</option>
+
+            <option value="activas"
+                {% if filtros.get('estado') == 'activas' %}selected{% endif %}>
+                Activas
+            </option>
+
+            <option value="inactivas"
+                {% if filtros.get('estado') == 'inactivas' %}selected{% endif %}>
+                Inactivas
+            </option>
+        </select>
+
+        <button type="submit" class="btn-donar">
+            Filtrar
+        </button>
+
+        <a href="{{ url_for('categorias') }}"
+           class="btn-limpiar">
+            Limpiar
+        </a>
+    </form>
+
+    <form class="categoria-form" method="POST" action="{{ url_for('categorias') }}">
+        <input type="text" name="nombre" placeholder="Nueva categoría" required minlength="2">
+        <button type="submit" class="btn-donar">Crear categoría</button>
+    </form>
+
+    <table class="categorias-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Estado</th>
+                <th>Editar</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for categoria in categorias %}
+                <tr>
+                    <form method="POST" action="{{ url_for('editar_categoria', categoria_id=categoria.id) }}">
+                        <td>{{ categoria.id }}</td>
+
+                        <td>
+                            <input type="text" name="nombre" value="{{ categoria.nombre }}" required>
+                        </td>
+
+                        <td>
+                            <select name="activa">
+                                <option value="1" {% if categoria.activa %}selected{% endif %}>Activa</option>
+                                <option value="0" {% if not categoria.activa %}selected{% endif %}>Inactiva</option>
+                            </select>
+                        </td>
+
+                        <td>
+                            <button type="submit" class="btn-donar">Guardar</button>
+                        </td>
+                    </form>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</main>
+{% endblock %}

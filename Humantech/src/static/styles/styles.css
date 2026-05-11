@@ -6,11 +6,66 @@
 }
 body {
     font-family: Verdana;
+    min-height: 100vh;
+}
+
+body {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f8fb;
+    min-height: 100vh;
+}
+
+.auth-page {
     background-image: url('../img/Hospital 2.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
     min-height: 100vh;
+}
+
+.app-header {
+    background: #ffffff;
+    border-top: 16px solid #2f3d52;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.app-header-logo {
+    display: flex;
+    justify-content: center;
+    padding: 22px 0 12px;
+}
+
+.app-header-logo img {
+    height: 60px;
+    object-fit: contain;
+}
+
+.app-nav {
+    display: flex;
+    justify-content: center;
+    gap: 55px;
+    padding: 14px 20px 18px;
+}
+
+.app-nav a {
+    color: #111;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.app-nav a:hover {
+    color: #1e88e5;
+}
+
+.app-nav .logout-link {
+    color: #d32f2f;
+    font-weight: bold;
 }
 
 .form-login {

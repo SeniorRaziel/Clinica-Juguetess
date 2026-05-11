@@ -1,55 +1,122 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial de Donaciones</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/historial.css') }}">
-</head>
-<body>
-    <div class="historial-container">
-        <h2>Historial de Donaciones</h2>
-        
-        {% if error %}
-            <p style="color:red;">Error: {{ error }}</p>
-        {% endif %}
-        
-        {% if not existe %}
-            <p style="color:red;">El donante con ID {{ id_donante }} no existe o no tiene donaciones registradas.</p>
-        {% else %}
-            {% if donaciones %}
-                <ul class="donaciones-listado">
-                    {% for d in donaciones %}
-                        <li class="donacion-item">
-                            <strong>ID Donación:</strong> {{ d.id_donacion }}<br>
-                            <strong>Donante ID:</strong> {{ d.donante_id }}<br>
-                            <strong>Fecha:</strong> {{ d.fecha_donacion }}<br>
-                            <strong>Tipo:</strong> {{ d.tipo_donacion }}<br>
-                            <strong>Descripción:</strong> {{ d.descripcion }}<br>
-                            <strong>Monto:</strong> ${{ "%.2f"|format(d.monto) }}<br>
-                            <strong>Categoría:</strong> {{ d.categoria }}<br>
-                            <strong>Beneficiario:</strong> {{ d.nombre_beneficiario or "No asignado" }}<br>
-                            <strong>Edad beneficiario:</strong> {{ d.edad_beneficiario or "No registrada" }}
-                        </li>
-                    {% endfor %}
-                </ul>
-                <div style="text-align:center; margin: 20px 0;">
-                    <a href="{{ url_for('descargar_informe_donaciones') }}?id_donante={{ id_donante }}" class="btn-donar" style="display:inline-block;">
-                        Descargar informe de donaciones (Excel)
-                    </a>
-                </div>
-                <div style="text-align:center; margin: 20px 0;">
-                    <form action="{{ url_for('enviar_agradecimientos') }}" method="post" style="display:inline;">
-                        <button type="submit" class="btn-donar">Enviar agradecimientos a donantes</button>
-                    </form>
-                </div>
-            {% else %}
-                <p>No hay donaciones registradas para este donante.</p>
-            {% endif %}
-        {% endif %}
+{% extends 'structure/base.html' %}
 
-        <a href="{{ url_for('home') }}">Volver al inicio</a>
+{% block title %}Gestión de Donaciones | Clínica de Juguetes{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/historial.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<main class="historial-container">
+    <h2>Historial de Juguetes</h2>
+
+    <form class="filtros-historial" method="GET" action="{{ url_for('historial') }}">
+        <div>
+            <label for="estado">Estado</label>
+            <select id="estado" name="estado">
+                <option value="">Todos</option>
+                <option value="registrado" {% if filtros.get('estado') == 'registrado' %}selected{% endif %}>Registrado</option>
+                <option value="en_revision" {% if filtros.get('estado') == 'en_revision' %}selected{% endif %}>En revisión</option>
+                <option value="en_reparacion" {% if filtros.get('estado') == 'en_reparacion' %}selected{% endif %}>En reparación</option>
+                <option value="reparado" {% if filtros.get('estado') == 'reparado' %}selected{% endif %}>Reparado</option>
+                <option value="listo_para_entrega" {% if filtros.get('estado') == 'listo_para_entrega' %}selected{% endif %}>Listo para entrega</option>
+                <option value="entregado" {% if filtros.get('estado') == 'entregado' %}selected{% endif %}>Entregado</option>
+                <option value="descartado" {% if filtros.get('estado') == 'descartado' %}selected{% endif %}>Descartado</option>
+            </select>
+        </div>
+    
+        {% if session.get('usuario_rol') == 'admin' %}
+            <div>
+                <label for="donante">Donante</label>
+                <input
+                    id="donante"
+                    type="text"
+                    name="donante"
+                    placeholder="Nombre o cédula"
+                    value="{{ filtros.get('donante', '') }}"
+                >
+            </div>
+        {% endif %}
+        
+        <div>
+            <label for="beneficiario">Beneficiario</label>
+            <input
+                id="beneficiario"
+                type="text"
+                name="beneficiario"
+                placeholder="Nombre o documento"
+                value="{{ filtros.get('beneficiario', '') }}"
+            >
+        </div>
+    
+        <div class="filtros-acciones">
+            <button type="submit" class="btn-donar">Filtrar</button>
+            <a href="{{ url_for('historial') }}" class="btn-limpiar">Limpiar</a>
+        </div>
+    </form>
+    {% if juguetes %}
+        <ul class="donaciones-listado">
+            {% for juguete in juguetes %}
+                <li class="donacion-item">
+                    <strong>Código:</strong> {{ juguete.codigo_barras }}<br>
+                    <strong>Nombre:</strong> {{ juguete.nombre }}<br>
+                    <strong>Categoría:</strong> {{ juguete.categoria }}<br>
+                    <strong>Descripción:</strong> {{ juguete.descripcion }}<br>
+                    <strong>Estado actual:</strong>
+                    <span class="estado estado-{{ juguete.estado_actual }}">
+                        {{ juguete.estado_actual.replace('_', ' ')|capitalize }}
+                    </span><br>
+                    {% if session.get('usuario_rol') == 'admin' %}
+                        <strong>Donante:</strong>
+                        {{ juguete.donante_nombre }} {{ juguete.donante_apellido }}
+                        - CC {{ juguete.donante_cedula }}<br>
+                    {% endif %}
+                    <strong>Fecha de recepción:</strong> {{ juguete.fecha_recepcion }}<br>
+                    {% if juguete.beneficiario_nombre %}
+    <strong>Entregado a:</strong>
+    {{ juguete.beneficiario_nombre }}
+    {% if juguete.beneficiario_documento %}
+        - Documento {{ juguete.beneficiario_documento }}
+    {% endif %}
+    <br>
+
+    <strong>Lugar de entrega:</strong> {{ juguete.lugar_entrega }}<br>
+    <strong>Fecha de entrega:</strong> {{ juguete.fecha_entrega }}<br>
+{% else %}
+    <strong>Entrega:</strong> Pendiente<br>
+{% endif %}
+
+                    {% if session.get('usuario_rol') == 'admin' %}
+                        <form action="{{ url_for('actualizar_estado_juguete', juguete_id=juguete.id) }}" method="POST" class="estado-form">
+                            <label for="estado-{{ juguete.id }}"><strong>Cambiar estado:</strong></label>
+
+                            <select id="estado-{{ juguete.id }}" name="estado" required>
+                                <option value="">Selecciona estado</option>
+                                <option value="registrado" {% if juguete.estado_actual == 'registrado' %}selected{% endif %}>Registrado</option>
+                                <option value="en_revision" {% if juguete.estado_actual == 'en_revision' %}selected{% endif %}>En revisión</option>
+                                <option value="en_reparacion" {% if juguete.estado_actual == 'en_reparacion' %}selected{% endif %}>En reparación</option>
+                                <option value="reparado" {% if juguete.estado_actual == 'reparado' %}selected{% endif %}>Reparado</option>
+                                <option value="listo_para_entrega" {% if juguete.estado_actual == 'listo_para_entrega' %}selected{% endif %}>Listo para entrega</option>
+                                <option value="entregado" {% if juguete.estado_actual == 'entregado' %}selected{% endif %}>Entregado</option>
+                                <option value="descartado" {% if juguete.estado_actual == 'descartado' %}selected{% endif %}>Descartado</option>
+                            </select>
+
+                            <textarea name="observacion" rows="2" placeholder="Observación del cambio de estado"></textarea>
+
+                            <button type="submit" class="btn-donar">Actualizar estado</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty-state">No hay juguetes registrados todavía.</p>
+    {% endif %}
+
+    <div style="text-align:center; margin: 20px 0;">
+        <a href="{{ url_for('home') }}" class="btn-donar">Volver al inicio</a>
     </div>
-</body>
-</html>
+</main>
+{% endblock %}

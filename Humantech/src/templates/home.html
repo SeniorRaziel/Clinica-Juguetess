@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clinica de Juguetes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
+    {% block styles %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
+    {% endblock %}
 </head>
 <body>
     {% if request.args.get('mensaje') %}
@@ -28,7 +30,7 @@
             <a href="#vision">¿Cual es Nuestro Propósito?</a>
             <a href="#proyeccion">Proyección</a>
             <a href="#consultas">Consultas</a>
-            {% if session['usuario'] %}
+            {% if session.get('usuario_id') %}
                 <a href="{{ url_for('logout') }}" style="color:#d32f2f;font-weight:bold;">Cerrar sesión</a>
             {% endif %}
         </nav>
@@ -94,14 +96,12 @@
     </section>
 
     <section id="consultas" class="Consultas">
-        <h2>Consulta tus Donaciones Aqui</h2>
-        {% if session['usuario'] %}
-            <form action="{{ url_for('ver_historial') }}" method="get" class="form-consulta">
-                <input type="hidden" name="id_donante" value="{{ id_donante }}">
-                <button type="submit">Consultar</button>
-            </form>
+        <h2>Consulta tus Donaciones Aquí</h2>
+    
+        {% if session.get('usuario_id') %}
+            <a href="{{ url_for('historial') }}" class="btn-donar">Consultar</a>
         {% else %}
-            <a href="{{ url_for('login', next=url_for('ver_historial')) }}" class="btn-donar">Consultar</a>
+            <a href="{{ url_for('login', next=url_for('historial')) }}" class="btn-donar">Consultar</a>
         {% endif %}
     </section>
     </header>
