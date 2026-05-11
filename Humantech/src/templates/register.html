@@ -1,23 +1,35 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Registro</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
-</head>
-<body>
-    <form class="form-login" action="/registro" method="POST">
-        <h5>Formulario de Registro</h5>
-        <input class="controls" type="text" name="Cedula_Donante" placeholder="Cédula" required>
-        <input class="controls" type="text" name="primer_nombre" placeholder="Primer Nombre" required>
-        <input class="controls" type="text" name="segundo_nombre" placeholder="Segundo Nombre">
-        <input class="controls" type="text" name="primer_apellido" placeholder="Primer Apellido" required>
-        <input class="controls" type="text" name="segundo_apellido" placeholder="Segundo Apellido">
-        <input class="controls" type="text" name="contacto" placeholder="Correo o Teléfono" required>
-        <input class="controls" type="password" name="clave" placeholder="Contraseña" required>
-        <input class="controls" type="password" name="clave2" placeholder="Repetir Contraseña" required>
-        <input class="buttons" type="submit" value="Registrarse">
-    </form>
-</body>
-</html>
+{% extends 'structure/base.html' %}
+
+{% block title %}Registro | Clínica de Juguetes{% endblock %}
+
+{% block content %}
+<form class="form-login" action="/registro" method="POST">
+    <h5>Registro de usuario</h5>
+
+    <input class="controls" type="text" name="Cedula_Donante" placeholder="Cédula"
+           value="{{ datos.get('Cedula_Donante', '') }}" required minlength="6" maxlength="12">
+
+    <input class="controls" type="text" name="primer_nombre" placeholder="Primer nombre"
+           value="{{ datos.get('primer_nombre', '') }}" required minlength="2" maxlength="50">
+
+    <input class="controls" type="text" name="segundo_nombre" placeholder="Segundo nombre"
+           value="{{ datos.get('segundo_nombre', '') }}" maxlength="50">
+
+    <input class="controls" type="text" name="primer_apellido" placeholder="Primer apellido"
+           value="{{ datos.get('primer_apellido', '') }}" required minlength="2" maxlength="50">
+
+    <input class="controls" type="text" name="segundo_apellido" placeholder="Segundo apellido"
+           value="{{ datos.get('segundo_apellido', '') }}" maxlength="50">
+
+    <input class="controls" type="text" name="contacto" placeholder="Correo o teléfono"
+           value="{{ datos.get('contacto', '') }}" required minlength="7" maxlength="100">
+
+    <input class="controls" type="password" name="clave" placeholder="Contraseña"
+           required minlength="6" maxlength="30">
+
+    <input class="controls" type="password" name="clave2" placeholder="Repetir contraseña"
+           required minlength="6" maxlength="30">
+
+    <input class="buttons" type="submit" value="Registrarse">
+</form>
+{% endblock %}

@@ -1,26 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinica de Juguetes UCC</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
-</head>
-<body>
-    <form class="form-login" method="post" action="{{ url_for('login') }}">
-        <h5>Clinica de Juguetes UCC</h5>
-        <label for="Cedula_Donante">Cédula:</label>
-        <input class="controls" type="text" name="Cedula_Donante" id="Cedula_Donante" required>
-        <label for="clave">Contraseña:</label>
-        <input class="controls" type="password" name="clave" id="clave" required>
-        <input class="buttons" type="submit" value="Ingresar">
-        {% if mensaje %}
-            <p style="color:red;">{{ mensaje }}</p>
-        {% endif %}
-        {% if error %}
-            <p style="color:red;">{{ error }}</p>
-        {% endif %}
-        <p><a href="{{ url_for('registro') }}">¿No tienes cuenta? Regístrate aquí</a></p>
-    </form>
-</body>
-</html>
+{% extends 'structure/base.html' %}
+
+{% block title %}Iniciar sesión | Clínica de Juguetes{% endblock %}
+
+{% block content %}
+<form class="form-login" action="/login" method="POST">
+    <h5>Iniciar sesión</h5>
+
+    <input class="controls" type="text" name="Cedula_Donante" placeholder="Cédula" required>
+
+    <input class="controls" type="password" name="clave" placeholder="Contraseña" required>
+
+    <input class="buttons" type="submit" value="Ingresar">
+
+    <p>
+        ¿No tienes cuenta?
+        <a href="{{ url_for('registro') }}">Regístrate aquí</a>
+    </p>
+</form>
+{% endblock %}

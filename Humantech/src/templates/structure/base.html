@@ -1,4 +1,13 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Clínica de Juguetes{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+</head>
 <body>
+    {% include 'structure/header.html' %}
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -12,17 +21,19 @@
         {% endif %}
     {% endwith %}
 
+    {% block content %}{% endblock %}
+
+    {% include 'structure/footer.html' %}
+
     <script>
         setTimeout(() => {
-            const alerts = document.querySelectorAll('.flash-message');
-    
-            alerts.forEach(alert => {
+            document.querySelectorAll('.flash-message').forEach(alert => {
                 alert.style.transition = 'opacity 0.5s ease';
                 alert.style.opacity = '0';
-    
-                setTimeout(() => {
-                    alert.remove();
-                }, 500);
+
+                setTimeout(() => alert.remove(), 500);
             });
         }, 5000);
     </script>
+</body>
+</html>

@@ -40,13 +40,54 @@ def obtener_donante_por_cedula(cedula):
     return donante
 
 def validar_registro(form):
-    campos = ['Cedula_Donante', 'primer_nombre', 'primer_apeliido', 'segundo_apellido', 'contacto', 'clave', 'clave2']
-    for campo in campos:
-        if not form.get(campo):
-            return False, f"El campo {campo} es obligatorio."
-    if form['clave'] != form['clave2']:
-        return False, "Las contraseñas no coinciden"
-    return True, ""
+    errores = []
+
+    cedula = form.get("Cedula_Donante", "").strip()
+    primer_nombre = form.get("primer_nombre", "").strip()
+    segundo_nombre = form.get("segundo_nombre", "").strip()
+    primer_apellido = form.get("primer_apellido", "").strip()
+    segundo_apellido = form.get("segundo_apellido", "").strip()
+    contacto = form.get("contacto", "").strip()
+    clave = form.get("clave", "")
+    clave2 = form.get("clave2", "")
+
+    if not cedula:
+        errores.append("La cédula es obligatoria.")
+    elif not cedula.isdigit():
+        errores.append("La cédula solo debe contener números.")
+    elif len(cedula) < 6 or len(cedula) > 12:
+        errores.append("La cédula debe tener entre 6 y 12 dígitos.")
+
+    if not primer_nombre:
+        errores.append("El primer nombre es obligatorio.")
+    elif len(primer_nombre) < 2:
+        errores.append("El primer nombre debe tener mínimo 2 caracteres.")
+
+    if segundo_nombre and len(segundo_nombre) < 2:
+        errores.append("El segundo nombre debe tener mínimo 2 caracteres.")
+
+    if not primer_apellido:
+        errores.append("El primer apellido es obligatorio.")
+    elif len(primer_apellido) < 2:
+        errores.append("El primer apellido debe tener mínimo 2 caracteres.")
+
+    if segundo_apellido and len(segundo_apellido) < 2:
+        errores.append("El segundo apellido debe tener mínimo 2 caracteres.")
+
+    if not contacto:
+        errores.append("El contacto es obligatorio.")
+    elif len(contacto) < 7:
+        errores.append("El contacto debe tener mínimo 7 caracteres.")
+
+    if not clave:
+        errores.append("La contraseña es obligatoria.")
+    elif len(clave) < 6:
+        errores.append("La contraseña debe tener mínimo 6 caracteres.")
+
+    if clave != clave2:
+        errores.append("Las contraseñas no coinciden.")
+
+    return len(errores) == 0, errores
 
 def validar_donacion_form(form):
     campos = ['tipo', 'descripcion', 'beneficiario_Cedula']
@@ -101,59 +142,78 @@ def login():
             return render_template("login.html", error=str(e))
     return render_template("login.html")
 
+### REGISTRO CONFIGURATION
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
-    mensaje = ""
     datos = {}
-    if request.method == "POST":
-        valido, mensaje = validar_registro(request.form)
-        if not valido:
-            return render_template('register.html', mensaje=mensaje, datos=request.form)
-        cedula_donante = request.form['Cedula_Donante']
-        primer_nombre = request.form['primer_nombre']
-        segundo_nombre = request.form['segundo_nombre']
-        primer_apellido = request.form['primer_apellido']
-        segundo_apellido = request.form['segundo_apellido']
-        contacto = request.form['contacto']
-        clave = request.form['clave']
-        clave2 = request.form['clave2']
 
+    if request.method == "POST":
         datos = {
-            "Cedula_Donante": cedula_donante,
-            "primer_nombre": primer_nombre,
-            "segundo_nombre": segundo_nombre,
-            "primer_apellido": primer_apellido,
-            "segundo_apellido": segundo_apellido,
-            "contacto": contacto
+            "Cedula_Donante": request.form.get("Cedula_Donante", "").strip(),
+            "primer_nombre": request.form.get("primer_nombre", "").strip(),
+            "segundo_nombre": request.form.get("segundo_nombre", "").strip(),
+            "primer_apellido": request.form.get("primer_apellido", "").strip(),
+            "segundo_apellido": request.form.get("segundo_apellido", "").strip(),
+            "contacto": request.form.get("contacto", "").strip()
         }
 
+        valido, errores = validar_registro(request.form)
+
+        if not valido:
+            for error in errores:
+                flash(error, "error")
+
+            return render_template("register.html", datos=datos)
+
         try:
-            mysql.connection.ping()
             cur = mysql.connection.cursor()
-            try:
-                cur.execute("SELECT * FROM donantes WHERE Cedula_Donante=%s", (cedula_donante,))
-                existe = cur.fetchone()
-                if existe:
-                    mensaje = "La cédula ya existe"
-                    return render_template('register.html', mensaje=mensaje, datos=datos)
 
-                cur.execute("""
-                    INSERT INTO donantes 
-                    (Cedula_Donante, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, contacto, clave)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                    """, (cedula_donante, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, contacto, clave))
-                mysql.connection.commit()
-            finally:
+            cur.execute(
+                "SELECT Cedula_Donante FROM donantes WHERE Cedula_Donante = %s",
+                (datos["Cedula_Donante"],)
+            )
+
+            donante_existente = cur.fetchone()
+
+            if donante_existente:
                 cur.close()
-        except MySQLdb.OperationalError as e:
-            logging.error(f"Error de conexión en registro: {e}")
-            mensaje = "Error de conexión con la base de datos. Intenta más tarde."
-            return render_template('register.html', mensaje=mensaje, datos=datos)
+                flash("Ya existe un usuario registrado con esa cédula.", "warning")
+                return render_template("register.html", datos=datos)
 
-        mensaje = "Registro exitoso. Ahora puedes iniciar sesión."
-        return redirect(url_for('login'))
-    return render_template('register.html', datos=datos)
+            cur.execute("""
+                INSERT INTO donantes (
+                    Cedula_Donante,
+                    primer_nombre,
+                    segundo_nombre,
+                    primer_apeliido,
+                    segundo_apellido,
+                    contacto,
+                    clave
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (
+                datos["Cedula_Donante"],
+                datos["primer_nombre"],
+                datos["segundo_nombre"],
+                datos["primer_apellido"],
+                datos["segundo_apellido"],
+                datos["contacto"],
+                request.form.get("clave")
+            ))
+
+            mysql.connection.commit()
+            cur.close()
+
+            flash("Usuario registrado correctamente. Ahora puedes iniciar sesión.", "success")
+            return redirect(url_for("login"))
+
+        except Exception as e:
+            logging.exception("Error en registro")
+            flash(f"Error al registrar usuario: {str(e)}", "error")
+            return render_template("register.html", datos=datos)
+
+    return render_template("register.html", datos=datos)
 
 @app.route('/donacion', methods=['GET', 'POST'])
 def gestion():
@@ -346,4 +406,5 @@ def verificar_cedulas():
 
 if __name__ == '__main__':
     app.secret_key = "sysong"
-    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
+    app.secret_key = "clinica-juguetes-secret"
+    app.run(debug=True, host='0.0.0.0', port=5001, threaded=True)
