@@ -1,0 +1,178 @@
+body {
+    background: #f4f8fb;
+}
+
+.detalle-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.detalle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 25px;
+}
+
+.detalle-header h2 {
+    color: #1565c0;
+}
+
+.btn-volver {
+    background: #eceff1;
+    color: #37474f;
+
+    padding: 10px 18px;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-weight: bold;
+
+    transition: 0.2s ease;
+}
+
+.btn-volver:hover {
+    background: #cfd8dc;
+}
+
+.detalle-card {
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 28px;
+
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+
+    display: grid;
+
+    gap: 24px;
+
+    margin-bottom: 35px;
+}
+
+.detalle-card h3 {
+    color: #1565c0;
+    margin-bottom: 12px;
+}
+
+.detalle-card p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.timeline-section {
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 28px;
+
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+}
+
+.timeline-section h3 {
+    color: #1565c0;
+    margin-bottom: 25px;
+}
+
+.timeline {
+    position: relative;
+
+    border-left: 3px solid #1e88e5;
+
+    margin-left: 20px;
+
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-dot {
+    position: absolute;
+
+    left: -39px;
+    top: 5px;
+
+    width: 16px;
+    height: 16px;
+
+    border-radius: 50%;
+
+    background: #1e88e5;
+}
+
+.timeline-content {
+    background: #f8fafc;
+
+    padding: 18px;
+
+    border-radius: 14px;
+
+    border: 1px solid #dbe5ec;
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 12px;
+}
+
+.timeline-estado {
+    font-weight: bold;
+    color: #1565c0;
+}
+
+.timeline-fecha {
+    font-size: 13px;
+    color: #607d8b;
+}
+
+.estado {
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+.estado-registrado {
+    background: #546e7a;
+}
+
+.estado-en_revision {
+    background: #fb8c00;
+}
+
+.estado-en_reparacion {
+    background: #8e24aa;
+}
+
+.estado-reparado {
+    background: #43a047;
+}
+
+.estado-listo_para_entrega {
+    background: #1e88e5;
+}
+
+.estado-entregado {
+    background: #2e7d32;
+}
+
+.estado-descartado {
+    background: #c62828;
+}

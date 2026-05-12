@@ -149,21 +149,23 @@ body {
 
 .btn-donar {
     background: #1e88e5;
-
     color: white;
-
     border: none;
-
     border-radius: 10px;
-
     padding: 12px;
-
     font-size: 15px;
     font-weight: bold;
-
     cursor: pointer;
-
     transition: background 0.2s ease;
+}
+
+.estado-form .btn-donar {
+    width: 100%;
+    margin-top: 12px;
+    margin-left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .btn-donar:hover {
@@ -390,4 +392,26 @@ body {
     border-radius: 10px;
     background: white;
     font-size: 14px;
+}
+
+.btn-trazabilidad {
+    width: 100%;
+    margin-top: 12px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: #eceff1;
+    color: #263238;
+    font-weight: bold;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border: 1px solid #d0d7de;
+}
+
+.btn-trazabilidad:hover {
+    background: #dbe5ec;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }

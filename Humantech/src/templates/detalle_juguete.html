@@ -1,0 +1,188 @@
+{% extends 'structure/base.html' %}
+
+{% block title %}
+Trazabilidad del Juguete | Clínica de Juguetes
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/detalle_juguete.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<main class="detalle-container">
+
+    <div class="detalle-header">
+        <h2>Trazabilidad del Juguete</h2>
+
+        <a href="{{ url_for('historial') }}" class="btn-volver">
+            ← Volver al historial
+        </a>
+    </div>
+
+    <section class="detalle-card">
+
+        <div class="detalle-info">
+            <p>
+                <strong>Código:</strong>
+                {{ juguete.codigo_barras }}
+            </p>
+
+            <p>
+                <strong>Nombre:</strong>
+                {{ juguete.nombre }}
+            </p>
+
+            <p>
+                <strong>Categoría:</strong>
+                {{ juguete.categoria_nombre }}
+            </p>
+
+            <p>
+                <strong>Descripción:</strong>
+                {{ juguete.descripcion }}
+            </p>
+
+            <p>
+                <strong>Estado actual:</strong>
+
+                <span class="estado estado-{{ juguete.estado_actual }}">
+                    {{ juguete.estado_actual.replace('_', ' ')|capitalize }}
+                </span>
+            </p>
+
+            <p>
+                <strong>Fecha recepción:</strong>
+                {{ juguete.fecha_recepcion }}
+            </p>
+
+        </div>
+
+        <div class="detalle-donante">
+            <h3>Información del Donante</h3>
+
+            <p>
+                <strong>Nombre:</strong>
+                {{ juguete.donante_nombre }}
+            </p>
+
+            <p>
+                <strong>Correo:</strong>
+                {{ juguete.donante_correo }}
+            </p>
+
+            {% if juguete.donante_telefono %}
+                <p>
+                    <strong>Teléfono:</strong>
+                    {{ juguete.donante_telefono }}
+                </p>
+            {% endif %}
+        </div>
+
+        {% if juguete.beneficiario_nombre %}
+
+        <div class="detalle-entrega">
+
+            <h3>Información de Entrega</h3>
+
+            <p>
+                <strong>Beneficiario:</strong>
+                {{ juguete.beneficiario_nombre }}
+            </p>
+
+            {% if juguete.beneficiario_edad %}
+                <p>
+                    <strong>Edad:</strong>
+                    {{ juguete.beneficiario_edad }}
+                </p>
+            {% endif %}
+
+            {% if juguete.beneficiario_institucion %}
+                <p>
+                    <strong>Institución:</strong>
+                    {{ juguete.beneficiario_institucion }}
+                </p>
+            {% endif %}
+
+            <p>
+                <strong>Lugar entrega:</strong>
+                {{ juguete.lugar_entrega }}
+            </p>
+
+            <p>
+                <strong>Fecha entrega:</strong>
+                {{ juguete.fecha_entrega }}
+            </p>
+
+            {% if juguete.entrega_observaciones %}
+                <p>
+                    <strong>Observaciones:</strong>
+                    {{ juguete.entrega_observaciones }}
+                </p>
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+    <section class="timeline-section">
+
+        <h3>Historial del Juguete</h3>
+
+        <div class="timeline">
+
+            {% for item in historial %}
+
+            <div class="timeline-item">
+
+                <div class="timeline-dot"></div>
+
+                <div class="timeline-content">
+
+                    <div class="timeline-header">
+
+                        <span class="timeline-estado">
+                            {{ item.estado_nuevo.replace('_', ' ')|capitalize }}
+                        </span>
+
+                        <span class="timeline-fecha">
+                            {{ item.creado_en }}
+                        </span>
+
+                    </div>
+
+                    {% if item.estado_anterior %}
+                        <p>
+                            <strong>Estado anterior:</strong>
+                            {{ item.estado_anterior.replace('_', ' ')|capitalize }}
+                        </p>
+                    {% endif %}
+
+                    {% if item.observacion %}
+                        <p>
+                            <strong>Observación:</strong>
+                            {{ item.observacion }}
+                        </p>
+                    {% endif %}
+
+                    <p>
+                        <strong>Actualizado por:</strong>
+                        {{ item.primer_nombre }} {{ item.primer_apellido }}
+                    </p>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</main>
+
+{% endblock %}

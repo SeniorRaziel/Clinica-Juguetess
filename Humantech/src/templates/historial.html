@@ -70,72 +70,63 @@
     {% if juguetes %}
         <ul class="donaciones-listado">
             {% for juguete in juguetes %}
-                <li class="donacion-item">
-                    <strong>Código:</strong> {{ juguete.codigo_barras }}<br>
-                    <strong>Nombre:</strong> {{ juguete.nombre }}<br>
-                    <strong>Categoría:</strong> {{ juguete.categoria_nombre }}<br>
-                    <strong>Descripción:</strong> {{ juguete.descripcion }}<br>
-                    <strong>Estado actual:</strong>
-                    <span class="estado estado-{{ juguete.estado_actual }}">
-                        {{ juguete.estado_actual.replace('_', ' ')|capitalize }}
-                    </span><br>
-                    {% if session.get('usuario_rol') == 'admin' %}
-                        <strong>Donante:</strong> {{ juguete.donante_nombre }}<br>
-                        <strong>Correo donante:</strong> {{ juguete.donante_correo }}<br>
-
-                        {% if juguete.donante_telefono %}
-                            <strong>Teléfono donante:</strong> {{ juguete.donante_telefono }}<br>
-                        {% endif %}
-                    {% endif %}
-                    <strong>Fecha de recepción:</strong> {{ juguete.fecha_recepcion }}<br>
-                    {% if juguete.beneficiario_nombre %}
-    <strong>Entregado a:</strong>
-    {{ juguete.beneficiario_nombre }}
-    {% if juguete.beneficiario_documento %}
-        - Documento {{ juguete.beneficiario_documento }}
-    {% endif %}
-    <br>
-
-    <strong>Lugar de entrega:</strong> {{ juguete.lugar_entrega }}<br>
-    <strong>Fecha de entrega:</strong> {{ juguete.fecha_entrega }}<br>
-{% else %}
-    <strong>Entrega:</strong> Pendiente<br>
-{% endif %}
-
-                    {% if session.get('usuario_rol') == 'admin' %}
+            <li class="donacion-item">
+                <strong>Código:</strong> {{ juguete.codigo_barras }}<br>
+                <strong>Nombre:</strong> {{ juguete.nombre }}<br>
+                <strong>Categoría:</strong> {{ juguete.categoria_nombre }}<br>
+            
+                <strong>Estado actual:</strong>
+                <span class="estado estado-{{ juguete.estado_actual }}">
+                    {{ juguete.estado_actual.replace('_', ' ')|capitalize }}
+                </span><br>
+            
+                {% if session.get('usuario_rol') == 'admin' %}
+                    <strong>Donante:</strong> {{ juguete.donante_nombre }}<br>
+                {% endif %}
+            
+                <strong>Fecha de recepción:</strong> {{ juguete.fecha_recepcion }}<br>
+            
+                {% if session.get('usuario_rol') == 'admin' %}
                     <form action="{{ url_for('actualizar_estado_juguete', juguete_id=juguete.id) }}"
-                    method="POST"
-                    class="estado-form form-estado-juguete"
-                    data-juguete-id="{{ juguete.id }}"
-                    data-entregado="{{ 'true' if juguete.beneficiario_nombre else 'false' }}">
-              
-                  <label for="estado-{{ juguete.id }}"><strong>Cambiar estado:</strong></label>
-              
-                  <select id="estado-{{ juguete.id }}" name="estado" required>
-                      <option value="">Selecciona estado</option>
-                      <option value="registrado" {% if juguete.estado_actual == 'registrado' %}selected{% endif %}>Registrado</option>
-                      <option value="en_revision" {% if juguete.estado_actual == 'en_revision' %}selected{% endif %}>En revisión</option>
-                      <option value="en_reparacion" {% if juguete.estado_actual == 'en_reparacion' %}selected{% endif %}>En reparación</option>
-                      <option value="reparado" {% if juguete.estado_actual == 'reparado' %}selected{% endif %}>Reparado</option>
-                      <option value="listo_para_entrega" {% if juguete.estado_actual == 'listo_para_entrega' %}selected{% endif %}>Listo para entrega</option>
-                      <option value="entregado" {% if juguete.estado_actual == 'entregado' %}selected{% endif %}>Entregado</option>
-                      <option value="descartado" {% if juguete.estado_actual == 'descartado' %}selected{% endif %}>Descartado</option>
-                  </select>
-              
-                  <textarea name="observacion" rows="2" placeholder="Observación del cambio de estado"></textarea>
-              
-                  <div class="campos-entrega" id="campos-entrega-{{ juguete.id }}">
-                      <input type="text" name="beneficiario_nombre" placeholder="Nombre del beneficiario">
-                      <input type="number" name="beneficiario_edad" placeholder="Edad aproximada" min="0" max="120">
-                      <input type="text" name="beneficiario_institucion" placeholder="Institución / comunidad / fundación">
-                      <input type="text" name="lugar_entrega" placeholder="Lugar de entrega">
-                      <textarea name="observaciones_entrega" rows="2" placeholder="Observaciones de la entrega"></textarea>
-                  </div>
-              
-                  <button type="submit" class="btn-donar">Actualizar estado</button>
-              </form>
-                    {% endif %}
-                </li>
+                          method="POST"
+                          class="estado-form form-estado-juguete"
+                          data-juguete-id="{{ juguete.id }}"
+                          data-entregado="{{ 'true' if juguete.beneficiario_nombre else 'false' }}">
+            
+                        <label for="estado-{{ juguete.id }}">
+                            <strong>Cambiar estado:</strong>
+                        </label>
+            
+                        <select id="estado-{{ juguete.id }}" name="estado" required>
+                            <option value="">Selecciona estado</option>
+                            <option value="registrado" {% if juguete.estado_actual == 'registrado' %}selected{% endif %}>Registrado</option>
+                            <option value="en_revision" {% if juguete.estado_actual == 'en_revision' %}selected{% endif %}>En revisión</option>
+                            <option value="en_reparacion" {% if juguete.estado_actual == 'en_reparacion' %}selected{% endif %}>En reparación</option>
+                            <option value="reparado" {% if juguete.estado_actual == 'reparado' %}selected{% endif %}>Reparado</option>
+                            <option value="listo_para_entrega" {% if juguete.estado_actual == 'listo_para_entrega' %}selected{% endif %}>Listo para entrega</option>
+                            <option value="entregado" {% if juguete.estado_actual == 'entregado' %}selected{% endif %}>Entregado</option>
+                            <option value="descartado" {% if juguete.estado_actual == 'descartado' %}selected{% endif %}>Descartado</option>
+                        </select>
+            
+                        <textarea name="observacion" rows="2" placeholder="Observación del cambio de estado"></textarea>
+            
+                        <div class="campos-entrega" id="campos-entrega-{{ juguete.id }}">
+                            <input type="text" name="beneficiario_nombre" placeholder="Nombre del beneficiario">
+                            <input type="number" name="beneficiario_edad" placeholder="Edad aproximada" min="0" max="120">
+                            <input type="text" name="beneficiario_institucion" placeholder="Institución / comunidad / fundación">
+                            <input type="text" name="lugar_entrega" placeholder="Lugar de entrega">
+                            <textarea name="observaciones_entrega" rows="2" placeholder="Observaciones de la entrega"></textarea>
+                        </div>
+            
+                        <button type="submit" class="btn-donar">Actualizar estado</button>
+                    </form>
+                {% endif %}
+            
+                <a href="{{ url_for('detalle_juguete', juguete_id=juguete.id) }}"
+                   class="btn-trazabilidad">
+                    Ver trazabilidad
+                </a>
+            </li>
             {% endfor %}
         </ul>
     {% else %}

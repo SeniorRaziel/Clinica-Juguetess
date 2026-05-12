@@ -841,6 +841,56 @@ def validar_donacion(form):
 
     return len(errores) == 0, errores
 
+@app.route("/juguetes/<int:juguete_id>")
+def detalle_juguete(juguete_id):
+    if "usuario_id" not in session:
+        flash("Debes iniciar sesión.", "warning")
+        return redirect(url_for("login"))
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        SELECT
+            j.*,
+            c.nombre AS categoria_nombre,
+            b.nombre AS beneficiario_nombre,
+            b.edad AS beneficiario_edad,
+            b.institucion AS beneficiario_institucion,
+            e.lugar_entrega,
+            e.fecha_entrega,
+            e.observaciones AS entrega_observaciones
+        FROM juguetes j
+        INNER JOIN categorias c ON c.id = j.categoria_id
+        LEFT JOIN entregas e ON e.juguete_id = j.id
+        LEFT JOIN beneficiarios b ON b.id = e.beneficiario_id
+        WHERE j.id = %s
+    """, (juguete_id,))
+
+    juguete = cur.fetchone()
+
+    cur.execute("""
+        SELECT
+            h.estado_anterior,
+            h.estado_nuevo,
+            h.observacion,
+            h.creado_en,
+            u.primer_nombre,
+            u.primer_apellido
+        FROM historial_estados_juguete h
+        INNER JOIN usuarios u ON u.id = h.usuario_id
+        WHERE h.juguete_id = %s
+        ORDER BY h.creado_en ASC
+    """, (juguete_id,))
+
+    historial = cur.fetchall()
+    cur.close()
+
+    return render_template(
+        "detalle_juguete.html",
+        juguete=juguete,
+        historial=historial
+    )
+
 @app.route("/logout")
 def logout():
     session.clear()
