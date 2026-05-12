@@ -3074,3 +3074,47 @@ INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:55] "[36mGET /static/styles/styl
 INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:55] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
 INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:55] "[36mGET /static/styles/historial.css HTTP/1.1[0m" 304 -
 INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:55] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug: * Detected change in '/Users/santi/Repos/Personal/Clinica-Juguetess/Humantech/src/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 787-990-670
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:48:58] "GET /historial?estado=&codigo_barras=123456789&donante=&beneficiario= HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:48:58] "GET /static/styles/styles.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:48:58] "GET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:48:58] "GET /static/styles/historial.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:48:58] "GET /static/styles/home.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:48:59] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:49:01] "GET /historial?estado=&codigo_barras=123456789&donante=&beneficiario= HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:49:01] "GET /static/styles/styles.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:49:02] "GET /static/styles/home.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:49:02] "GET /static/styles/historial.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:49:02] "GET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:49:02] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:49:29] "[32mPOST /juguetes/12/estado HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:49:29] "GET /historial HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:49:29] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:49:29] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:49:29] "[36mGET /static/styles/historial.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:49:29] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:51:41] "GET /historial HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:51:41] "GET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:51:41] "GET /static/styles/styles.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:51:41] "GET /static/styles/home.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:51:41] "GET /static/styles/historial.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:51:41] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:15] "GET /historial?estado=&codigo_barras=123456789&donante=&beneficiario= HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:15] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:15] "[36mGET /static/styles/historial.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:15] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:15] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:18] "GET /historial HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:19] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:19] "[36mGET /static/styles/historial.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:19] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:19] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:42] "[32mPOST /juguetes/9/estado HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:42] "GET /historial HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:42] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:42] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:42] "[36mGET /static/styles/historial.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:52:42] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -

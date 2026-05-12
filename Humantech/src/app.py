@@ -540,8 +540,13 @@ def historial():
 
 @app.route("/juguetes/<int:juguete_id>/estado", methods=["POST"])
 def actualizar_estado_juguete(juguete_id):
-    if not login_requerido():
+    if "usuario_id" not in session:
+        flash("Debes iniciar sesión.", "warning")
         return redirect(url_for("login"))
+
+    if session.get("usuario_rol") != "admin":
+        flash("No tienes permisos para actualizar estados.", "error")
+        return redirect(url_for("historial"))
 
     nuevo_estado = request.form.get("estado", "").strip()
     observacion = request.form.get("observacion", "").strip()
@@ -573,11 +578,10 @@ def actualizar_estado_juguete(juguete_id):
 
         estado_anterior = juguete["estado_actual"]
 
-        cur.execute("""
-            UPDATE juguetes
-            SET estado_actual = %s
-            WHERE id = %s
-        """, (nuevo_estado, juguete_id))
+        cur.execute(
+            "UPDATE juguetes SET estado_actual = %s WHERE id = %s",
+            (nuevo_estado, juguete_id)
+        )
 
         cur.execute("""
             INSERT INTO historial_estados_juguete (
@@ -595,6 +599,53 @@ def actualizar_estado_juguete(juguete_id):
             observacion,
             session["usuario_id"],
         ))
+
+        if nuevo_estado == "entregado":
+            beneficiario_nombre = request.form.get("beneficiario_nombre", "").strip()
+            beneficiario_edad = request.form.get("beneficiario_edad", "").strip()
+            beneficiario_institucion = request.form.get("beneficiario_institucion", "").strip()
+            lugar_entrega = request.form.get("lugar_entrega", "").strip()
+            observaciones_entrega = request.form.get("observaciones_entrega", "").strip()
+
+            if not beneficiario_nombre or not lugar_entrega:
+                mysql.connection.rollback()
+                cur.close()
+                flash("Para entregar el juguete debes ingresar beneficiario y lugar de entrega.", "error")
+                return redirect(url_for("historial"))
+
+            cur.execute("""
+                INSERT INTO beneficiarios (
+                    nombre,
+                    edad,
+                    institucion,
+                    observaciones
+                )
+                VALUES (%s, %s, %s, %s)
+            """, (
+                beneficiario_nombre,
+                int(beneficiario_edad) if beneficiario_edad else None,
+                beneficiario_institucion or None,
+                observaciones_entrega or None,
+            ))
+
+            beneficiario_id = cur.lastrowid
+
+            cur.execute("""
+                INSERT INTO entregas (
+                    juguete_id,
+                    beneficiario_id,
+                    entregado_por_id,
+                    lugar_entrega,
+                    observaciones
+                )
+                VALUES (%s, %s, %s, %s, %s)
+            """, (
+                juguete_id,
+                beneficiario_id,
+                session["usuario_id"],
+                lugar_entrega,
+                observaciones_entrega or None,
+            ))
 
         mysql.connection.commit()
         cur.close()

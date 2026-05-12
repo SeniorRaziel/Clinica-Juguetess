@@ -82,7 +82,7 @@
                     {% if session.get('usuario_rol') == 'admin' %}
                         <strong>Donante:</strong> {{ juguete.donante_nombre }}<br>
                         <strong>Correo donante:</strong> {{ juguete.donante_correo }}<br>
-                                    
+
                         {% if juguete.donante_telefono %}
                             <strong>Teléfono donante:</strong> {{ juguete.donante_telefono }}<br>
                         {% endif %}
@@ -103,24 +103,37 @@
 {% endif %}
 
                     {% if session.get('usuario_rol') == 'admin' %}
-                        <form action="{{ url_for('actualizar_estado_juguete', juguete_id=juguete.id) }}" method="POST" class="estado-form">
-                            <label for="estado-{{ juguete.id }}"><strong>Cambiar estado:</strong></label>
-
-                            <select id="estado-{{ juguete.id }}" name="estado" required>
-                                <option value="">Selecciona estado</option>
-                                <option value="registrado" {% if juguete.estado_actual == 'registrado' %}selected{% endif %}>Registrado</option>
-                                <option value="en_revision" {% if juguete.estado_actual == 'en_revision' %}selected{% endif %}>En revisión</option>
-                                <option value="en_reparacion" {% if juguete.estado_actual == 'en_reparacion' %}selected{% endif %}>En reparación</option>
-                                <option value="reparado" {% if juguete.estado_actual == 'reparado' %}selected{% endif %}>Reparado</option>
-                                <option value="listo_para_entrega" {% if juguete.estado_actual == 'listo_para_entrega' %}selected{% endif %}>Listo para entrega</option>
-                                <option value="entregado" {% if juguete.estado_actual == 'entregado' %}selected{% endif %}>Entregado</option>
-                                <option value="descartado" {% if juguete.estado_actual == 'descartado' %}selected{% endif %}>Descartado</option>
-                            </select>
-
-                            <textarea name="observacion" rows="2" placeholder="Observación del cambio de estado"></textarea>
-
-                            <button type="submit" class="btn-donar">Actualizar estado</button>
-                        </form>
+                    <form action="{{ url_for('actualizar_estado_juguete', juguete_id=juguete.id) }}"
+                    method="POST"
+                    class="estado-form form-estado-juguete"
+                    data-juguete-id="{{ juguete.id }}"
+                    data-entregado="{{ 'true' if juguete.beneficiario_nombre else 'false' }}">
+              
+                  <label for="estado-{{ juguete.id }}"><strong>Cambiar estado:</strong></label>
+              
+                  <select id="estado-{{ juguete.id }}" name="estado" required>
+                      <option value="">Selecciona estado</option>
+                      <option value="registrado" {% if juguete.estado_actual == 'registrado' %}selected{% endif %}>Registrado</option>
+                      <option value="en_revision" {% if juguete.estado_actual == 'en_revision' %}selected{% endif %}>En revisión</option>
+                      <option value="en_reparacion" {% if juguete.estado_actual == 'en_reparacion' %}selected{% endif %}>En reparación</option>
+                      <option value="reparado" {% if juguete.estado_actual == 'reparado' %}selected{% endif %}>Reparado</option>
+                      <option value="listo_para_entrega" {% if juguete.estado_actual == 'listo_para_entrega' %}selected{% endif %}>Listo para entrega</option>
+                      <option value="entregado" {% if juguete.estado_actual == 'entregado' %}selected{% endif %}>Entregado</option>
+                      <option value="descartado" {% if juguete.estado_actual == 'descartado' %}selected{% endif %}>Descartado</option>
+                  </select>
+              
+                  <textarea name="observacion" rows="2" placeholder="Observación del cambio de estado"></textarea>
+              
+                  <div class="campos-entrega" id="campos-entrega-{{ juguete.id }}">
+                      <input type="text" name="beneficiario_nombre" placeholder="Nombre del beneficiario">
+                      <input type="number" name="beneficiario_edad" placeholder="Edad aproximada" min="0" max="120">
+                      <input type="text" name="beneficiario_institucion" placeholder="Institución / comunidad / fundación">
+                      <input type="text" name="lugar_entrega" placeholder="Lugar de entrega">
+                      <textarea name="observaciones_entrega" rows="2" placeholder="Observaciones de la entrega"></textarea>
+                  </div>
+              
+                  <button type="submit" class="btn-donar">Actualizar estado</button>
+              </form>
                     {% endif %}
                 </li>
             {% endfor %}
@@ -133,4 +146,31 @@
         <a href="{{ url_for('home') }}" class="btn-donar">Volver al inicio</a>
     </div>
 </main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".form-estado-juguete").forEach((form) => {
+        const selectEstado = form.querySelector("select[name='estado']");
+        const camposEntrega = form.querySelector(".campos-entrega");
+
+        function actualizarCamposEntrega() {
+            const yaEntregado = form.dataset.entregado === "true";
+            if (selectEstado.value === "entregado" && !yaEntregado) {
+                camposEntrega.classList.add("visible");
+                camposEntrega.querySelector("input[name='beneficiario_nombre']").required = true;
+                camposEntrega.querySelector("input[name='lugar_entrega']").required = true;
+            } else {
+                camposEntrega.classList.remove("visible");
+                camposEntrega.querySelector("input[name='beneficiario_nombre']").required = false;
+                camposEntrega.querySelector("input[name='lugar_entrega']").required = false;
+            }
+        }
+
+        selectEstado.addEventListener("change", actualizarCamposEntrega);
+        actualizarCamposEntrega();
+    });
+});
+</script>
 {% endblock %}

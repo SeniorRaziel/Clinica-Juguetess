@@ -367,3 +367,27 @@ body {
     background: #cfd8dc;
     transform: translateY(-1px);
 }
+
+.campos-entrega {
+    display: none;
+    margin-top: 14px;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(30, 136, 229, 0.08);
+    border: 1px solid rgba(30, 136, 229, 0.18);
+}
+
+.campos-entrega.visible {
+    display: grid;
+    gap: 10px;
+}
+
+.campos-entrega input,
+.campos-entrega textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d0d7de;
+    border-radius: 10px;
+    background: white;
+    font-size: 14px;
+}
