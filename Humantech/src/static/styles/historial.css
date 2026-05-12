@@ -246,3 +246,124 @@ body {
 .btn-limpiar:hover {
     background: #cfd8dc;
 }
+
+.filtros-historial {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+
+    align-items: flex-end;
+
+    background: #ffffff;
+
+    padding: 22px;
+
+    border-radius: 18px;
+
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+
+    margin-bottom: 28px;
+}
+
+.filtros-historial > div {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 180px;
+
+    flex: 1;
+}
+
+.filtros-historial label {
+    font-weight: bold;
+
+    margin-bottom: 8px;
+
+    color: #1565c0;
+
+    font-size: 14px;
+}
+
+.filtros-historial input,
+.filtros-historial select {
+    height: 46px;
+
+    border: 1px solid #d0d7de;
+
+    border-radius: 10px;
+
+    padding: 0 14px;
+
+    background: #f8fafc;
+
+    font-size: 14px;
+
+    transition: all 0.2s ease;
+}
+
+.filtros-historial input:focus,
+.filtros-historial select:focus {
+    outline: none;
+
+    border-color: #1e88e5;
+
+    box-shadow: 0 0 0 3px rgba(30,136,229,0.15);
+}
+
+.filtros-acciones {
+    display: flex !important;
+
+    flex-direction: row !important;
+
+    align-items: center;
+
+    gap: 12px;
+
+    min-width: auto !important;
+
+    flex: unset !important;
+}
+
+.filtros-acciones .btn-donar,
+.filtros-acciones .btn-limpiar {
+    height: 46px;
+
+    padding: 0 22px;
+
+    border-radius: 10px;
+
+    font-weight: bold;
+
+    font-size: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.filtros-acciones .btn-donar {
+    background: #1e88e5;
+    color: white;
+    border: none;
+}
+
+.filtros-acciones .btn-donar:hover {
+    background: #1565c0;
+    transform: translateY(-1px);
+}
+
+.filtros-acciones .btn-limpiar {
+    background: #eceff1;
+    color: #37474f;
+}
+
+.filtros-acciones .btn-limpiar:hover {
+    background: #cfd8dc;
+    transform: translateY(-1px);
+}

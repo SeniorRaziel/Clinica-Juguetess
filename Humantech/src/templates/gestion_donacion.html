@@ -1,21 +1,64 @@
 {% extends 'structure/base.html' %}
 
-{% block title %}Gestión de Donaciones | Clínica de Juguetes{% endblock %}
+{% block title %}Registro de Juguete | Clínica de Juguetes{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/donacion.css') }}">
 {% endblock %}
 
 {% block content %}
 <main class="gestion-donacion">
-    <h2>Deja tu Juguete Aquí</h2>
+    <h2>Registrar Juguete</h2>
 
     <form class="form-donacion" action="{{ url_for('donacion') }}" method="POST">
+        <label for="codigo_barras">Código de barras:</label>
+        <input
+            type="text"
+            id="codigo_barras"
+            name="codigo_barras"
+            placeholder="Escanea o escribe el código"
+            value="{{ datos.get('codigo_barras', '') }}"
+            required
+            autofocus
+        >
+
+        <label for="donante_nombre">Nombre del donante:</label>
+        <input
+            type="text"
+            id="donante_nombre"
+            name="donante_nombre"
+            placeholder="Nombre completo"
+            value="{{ datos.get('donante_nombre', '') }}"
+            required
+            minlength="2"
+            maxlength="120"
+        >
+
+        <label for="donante_correo">Correo del donante:</label>
+        <input
+            type="email"
+            id="donante_correo"
+            name="donante_correo"
+            placeholder="correo@ejemplo.com"
+            value="{{ datos.get('donante_correo', '') }}"
+            required
+            maxlength="150"
+        >
+
+        <label for="donante_telefono">Teléfono del donante (opcional):</label>
+        <input
+            type="text"
+            id="donante_telefono"
+            name="donante_telefono"
+            placeholder="Teléfono"
+            value="{{ datos.get('donante_telefono', '') }}"
+            maxlength="30"
+        >
+
         <label for="categoria_id">Categoría del juguete:</label>
         <select id="categoria_id" name="categoria_id" required>
             <option value="">Selecciona una categoría</option>
-        
+
             {% for categoria in categorias %}
                 <option value="{{ categoria.id }}"
                     {% if datos.get('categoria_id') == categoria.id|string %}selected{% endif %}>
@@ -24,41 +67,39 @@
             {% endfor %}
         </select>
 
-        <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion"
-                  name="descripcion"
-                  rows="3"
-                  required
-                  minlength="5">{{ datos.get('descripcion', '') }}</textarea>
+        <label for="descripcion">Descripción del juguete:</label>
+        <textarea
+            id="descripcion"
+            name="descripcion"
+            rows="3"
+            required
+            minlength="5"
+            placeholder="Ej: Carro rojo usado, requiere limpieza">{{ datos.get('descripcion', '') }}</textarea>
 
-                  <label for="beneficiario_id">Beneficiario:</label>
-                  <select id="beneficiario_id" name="beneficiario_id" required>
-                      <option value="">Selecciona un beneficiario</option>
-                  
-                      {% for beneficiario in beneficiarios %}
-                          <option value="{{ beneficiario.id }}"
-                              {% if datos.get('beneficiario_id') == beneficiario.id|string %}selected{% endif %}>
-                              {{ beneficiario.nombre }}{% if beneficiario.documento %} - {{ beneficiario.documento }}{% endif %}
-                          </option>
-                      {% endfor %}
-                  </select>
-
-        <button type="submit" class="btn-donar">Donar</button>
+        <button type="submit" class="btn-donar">Registrar juguete</button>
     </form>
 </main>
 {% endblock %}
 
 {% block scripts %}
 <script>
-function mostrarOpciones() {
-    const tipo = document.getElementById('tipo_donacion').value;
+document.addEventListener("DOMContentLoaded", () => {
+    const inputCodigo = document.getElementById("codigo_barras");
 
-    document.getElementById('opcion-carros').style.display = tipo === 'carros' ? 'block' : 'none';
-    document.getElementById('opcion-munecas').style.display = tipo === 'munecas' ? 'block' : 'none';
-    document.getElementById('opcion-balones').style.display = tipo === 'balones' ? 'block' : 'none';
-    document.getElementById('opcion-otros').style.display = tipo === 'otros' ? 'block' : 'none';
-}
+    inputCodigo.focus();
 
-document.addEventListener('DOMContentLoaded', mostrarOpciones);
+    inputCodigo.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+
+            const codigo = inputCodigo.value.trim();
+
+            if (codigo.length > 0) {
+                const siguienteCampo = document.getElementById("donante_nombre");
+                siguienteCampo.focus();
+            }
+        }
+    });
+});
 </script>
 {% endblock %}

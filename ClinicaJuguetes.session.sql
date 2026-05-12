@@ -1,2 +1,1 @@
-SHOW TABLES;
-
+select * from usuarios;

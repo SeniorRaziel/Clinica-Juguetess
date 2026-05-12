@@ -26,6 +26,17 @@
                 <option value="descartado" {% if filtros.get('estado') == 'descartado' %}selected{% endif %}>Descartado</option>
             </select>
         </div>
+
+        <div>
+            <label for="codigo_barras">Código de barras</label>
+            <input
+                id="codigo_barras"
+                type="text"
+                name="codigo_barras"
+                placeholder="Ej: JUG-000001"
+                value="{{ filtros.get('codigo_barras', '') }}"
+            >
+        </div>
     
         {% if session.get('usuario_rol') == 'admin' %}
             <div>
@@ -62,16 +73,19 @@
                 <li class="donacion-item">
                     <strong>Código:</strong> {{ juguete.codigo_barras }}<br>
                     <strong>Nombre:</strong> {{ juguete.nombre }}<br>
-                    <strong>Categoría:</strong> {{ juguete.categoria }}<br>
+                    <strong>Categoría:</strong> {{ juguete.categoria_nombre }}<br>
                     <strong>Descripción:</strong> {{ juguete.descripcion }}<br>
                     <strong>Estado actual:</strong>
                     <span class="estado estado-{{ juguete.estado_actual }}">
                         {{ juguete.estado_actual.replace('_', ' ')|capitalize }}
                     </span><br>
                     {% if session.get('usuario_rol') == 'admin' %}
-                        <strong>Donante:</strong>
-                        {{ juguete.donante_nombre }} {{ juguete.donante_apellido }}
-                        - CC {{ juguete.donante_cedula }}<br>
+                        <strong>Donante:</strong> {{ juguete.donante_nombre }}<br>
+                        <strong>Correo donante:</strong> {{ juguete.donante_correo }}<br>
+                                    
+                        {% if juguete.donante_telefono %}
+                            <strong>Teléfono donante:</strong> {{ juguete.donante_telefono }}<br>
+                        {% endif %}
                     {% endif %}
                     <strong>Fecha de recepción:</strong> {{ juguete.fecha_recepcion }}<br>
                     {% if juguete.beneficiario_nombre %}

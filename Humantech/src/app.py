@@ -159,40 +159,65 @@ def login():
 
     return render_template("login.html")
 
-
-@app.route("/registro", methods=["GET", "POST"])
+@app.route('/registro', methods=['GET', 'POST'])
 def registro():
+
     datos = {}
 
     if request.method == "POST":
+
         datos = {
             "Cedula_Donante": request.form.get("Cedula_Donante", "").strip(),
             "primer_nombre": request.form.get("primer_nombre", "").strip(),
             "segundo_nombre": request.form.get("segundo_nombre", "").strip(),
             "primer_apellido": request.form.get("primer_apellido", "").strip(),
             "segundo_apellido": request.form.get("segundo_apellido", "").strip(),
-            "contacto": request.form.get("contacto", "").strip(),
+            "contacto": request.form.get("contacto", "").strip()
         }
 
         valido, errores = validar_registro(request.form)
 
         if not valido:
+
             for error in errores:
                 flash(error, "error")
-            return render_template("register.html", datos=datos)
+
+            return render_template(
+                "register.html",
+                datos=datos
+            )
 
         try:
+
             cur = mysql.connection.cursor()
 
-            cur.execute("SELECT id FROM usuarios WHERE cedula = %s", (datos["Cedula_Donante"],))
+            cur.execute(
+                """
+                SELECT id
+                FROM usuarios
+                WHERE cedula = %s
+                """,
+                (datos["Cedula_Donante"],)
+            )
+
             usuario_existente = cur.fetchone()
 
             if usuario_existente:
-                cur.close()
-                flash("Ya existe un usuario registrado con esa cédula.", "warning")
-                return render_template("register.html", datos=datos)
 
-            cur.execute("""
+                cur.close()
+
+                flash(
+                    "Ya existe un usuario registrado con esa cédula.",
+                    "warning"
+                )
+
+                return render_template(
+                    "register.html",
+                    datos=datos
+                )
+
+            cur.execute(
+                """
                 INSERT INTO usuarios (
                     cedula,
                     primer_nombre,
@@ -203,82 +228,163 @@ def registro():
                     clave,
                     rol
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, 'donante')
-            """, (
-                datos["Cedula_Donante"],
-                datos["primer_nombre"],
-                datos["segundo_nombre"],
-                datos["primer_apellido"],
-                datos["segundo_apellido"],
-                datos["contacto"],
-                request.form.get("clave"),
-            ))
+                VALUES (
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    'donante'
+                )
+                """,
+                (
+                    datos["Cedula_Donante"],
+                    datos["primer_nombre"],
+                    datos["segundo_nombre"],
+                    datos["primer_apellido"],
+                    datos["segundo_apellido"],
+                    datos["contacto"],
+                    request.form.get("clave")
+                )
+            )
 
             mysql.connection.commit()
+
             cur.close()
 
-            flash("Usuario registrado correctamente. Ahora puedes iniciar sesión.", "success")
+            flash(
+                "Usuario registrado correctamente. Ahora puedes iniciar sesión.",
+                "success"
+            )
+
             return redirect(url_for("login"))
 
         except Exception as e:
+
             logging.exception("Error en registro")
-            flash(f"Error al registrar usuario: {str(e)}", "error")
-            return render_template("register.html", datos=datos)
 
-    return render_template("register.html", datos=datos)
+            flash(
+                f"Error al registrar usuario: {str(e)}",
+                "error"
+            )
 
+            return render_template(
+                "register.html",
+                datos=datos
+            )
+
+    return render_template(
+        "register.html",
+        datos=datos
+    )
 
 @app.route("/donacion", methods=["GET", "POST"])
 def donacion():
-    if not login_requerido():
+    if "usuario_id" not in session:
+        flash("Debes iniciar sesión para registrar un juguete.", "warning")
         return redirect(url_for("login", next=request.url))
 
     datos = {}
-    beneficiarios = obtener_beneficiarios()
+
     categorias = obtener_categorias_activas()
 
     if request.method == "POST":
+
         datos = {
+            "codigo_barras": request.form.get("codigo_barras", "").strip(),
+            "donante_nombre": request.form.get("donante_nombre", "").strip(),
+            "donante_correo": request.form.get("donante_correo", "").strip(),
+            "donante_telefono": request.form.get("donante_telefono", "").strip(),
             "categoria_id": request.form.get("categoria_id", "").strip(),
             "descripcion": request.form.get("descripcion", "").strip(),
-            "beneficiario_id": request.form.get("beneficiario_id", "").strip(),
         }
-
-        categoria = obtener_categoria_donacion(request.form)
 
         valido, errores = validar_donacion(request.form)
 
         if not valido:
+
             for error in errores:
                 flash(error, "error")
-            return render_template("gestion_donacion.html", datos=datos, beneficiarios=beneficiarios)
+
+            return render_template(
+                "gestion_donacion.html",
+                datos=datos,
+                categorias=categorias
+            )
 
         try:
-            codigo_barras = f"JUG-{session['usuario_id']}-{os.urandom(3).hex().upper()}"
 
             cur = mysql.connection.cursor()
 
-            cur.execute("""
+            cur.execute(
+                """
+                SELECT id
+                FROM juguetes
+                WHERE codigo_barras = %s
+                """,
+                (datos["codigo_barras"],)
+            )
+
+            juguete_existente = cur.fetchone()
+
+            if juguete_existente:
+
+                cur.close()
+
+                flash(
+                    "Ya existe un juguete registrado con ese código de barras.",
+                    "warning"
+                )
+
+                return render_template(
+                    "gestion_donacion.html",
+                    datos=datos,
+                    categorias=categorias
+                )
+
+            cur.execute(
+                """
                 INSERT INTO juguetes (
                     codigo_barras,
                     nombre,
                     categoria_id,
                     descripcion,
-                    estado_actual,
-                    donante_id
+                    donante_id,
+                    donante_nombre,
+                    donante_correo,
+                    donante_telefono,
+                    estado_actual
                 )
-                VALUES (%s, %s, %s, %s, 'registrado', %s)
-            """, (
-                codigo_barras,
-                "Juguete donado",
-                datos["categoria_id"],
-                datos["descripcion"],
-                session["usuario_id"],
-            ))
+                VALUES (
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    'registrado'
+                )
+                """,
+                (
+                    datos["codigo_barras"],
+                    "Juguete donado",
+                    datos["categoria_id"],
+                    datos["descripcion"],
+                    session.get("usuario_id"),
+                    datos["donante_nombre"],
+                    datos["donante_correo"],
+                    datos["donante_telefono"] or None,
+                )
+            )
 
             juguete_id = cur.lastrowid
 
-            cur.execute("""
+            cur.execute(
+                """
                 INSERT INTO historial_estados_juguete (
                     juguete_id,
                     estado_anterior,
@@ -286,25 +392,52 @@ def donacion():
                     observacion,
                     usuario_id
                 )
-                VALUES (%s, NULL, 'registrado', %s, %s)
-            """, (
-                juguete_id,
-                "Juguete registrado en el sistema.",
-                session["usuario_id"],
-            ))
+                VALUES (
+                    %s,
+                    NULL,
+                    'registrado',
+                    %s,
+                    %s
+                )
+                """,
+                (
+                    juguete_id,
+                    "Juguete recibido y registrado en el sistema.",
+                    session.get("usuario_id"),
+                )
+            )
 
             mysql.connection.commit()
+
             cur.close()
 
-            flash(f"Juguete registrado correctamente. Código: {codigo_barras}", "success")
+            flash(
+                "Juguete registrado correctamente.",
+                "success"
+            )
+
             return redirect(url_for("historial"))
 
         except Exception as e:
-            logging.exception("Error registrando juguete")
-            flash(f"Error técnico al registrar donación: {str(e)}", "error")
-            return render_template("gestion_donacion.html", datos=datos, beneficiarios=beneficiarios)
 
-    return render_template("gestion_donacion.html", datos=datos, beneficiarios=beneficiarios)
+            logging.exception("Error registrando juguete")
+
+            flash(
+                f"Error técnico al registrar juguete: {str(e)}",
+                "error"
+            )
+
+            return render_template(
+                "gestion_donacion.html",
+                datos=datos,
+                categorias=categorias
+            )
+
+    return render_template(
+        "gestion_donacion.html",
+        datos=datos,
+        categorias=categorias
+    )
 
 @app.route("/historial")
 def historial():
@@ -313,6 +446,7 @@ def historial():
         return redirect(url_for("login", next=request.url))
 
     estado = request.args.get("estado", "").strip()
+    codigo_barras = request.args.get("codigo_barras", "").strip()
     donante = request.args.get("donante", "").strip()
     beneficiario = request.args.get("beneficiario", "").strip()
 
@@ -324,14 +458,14 @@ def historial():
                 j.id,
                 j.codigo_barras,
                 j.nombre,
-                j.categoria,
                 j.descripcion,
                 j.estado_actual,
                 j.fecha_recepcion,
+                j.donante_nombre,
+                j.donante_correo,
+                j.donante_telefono,
 
-                donante.primer_nombre AS donante_nombre,
-                donante.primer_apellido AS donante_apellido,
-                donante.cedula AS donante_cedula,
+                c.nombre AS categoria_nombre,
 
                 b.nombre AS beneficiario_nombre,
                 b.documento AS beneficiario_documento,
@@ -339,7 +473,7 @@ def historial():
                 e.fecha_entrega
 
             FROM juguetes j
-            INNER JOIN usuarios donante ON donante.id = j.donante_id
+            INNER JOIN categorias c ON c.id = j.categoria_id
             LEFT JOIN entregas e ON e.juguete_id = j.id
             LEFT JOIN beneficiarios b ON b.id = e.beneficiario_id
             WHERE 1 = 1
@@ -355,12 +489,16 @@ def historial():
             query += " AND j.estado_actual = %s"
             params.append(estado)
 
+        if codigo_barras:
+            query += " AND j.codigo_barras LIKE %s"
+            params.append(f"%{codigo_barras}%")
+
         if donante:
             query += """
                 AND (
-                    donante.cedula LIKE %s
-                    OR donante.primer_nombre LIKE %s
-                    OR donante.primer_apellido LIKE %s
+                    j.donante_nombre LIKE %s
+                    OR j.donante_correo LIKE %s
+                    OR j.donante_telefono LIKE %s
                 )
             """
             like_donante = f"%{donante}%"
@@ -384,6 +522,7 @@ def historial():
 
         filtros = {
             "estado": estado,
+            "codigo_barras": codigo_barras,
             "donante": donante,
             "beneficiario": beneficiario,
         }
@@ -622,18 +761,32 @@ def generar_slug(texto):
 def validar_donacion(form):
     errores = []
 
+    codigo_barras = form.get("codigo_barras", "").strip()
+    donante_nombre = form.get("donante_nombre", "").strip()
+    donante_correo = form.get("donante_correo", "").strip()
+    donante_telefono = form.get("donante_telefono", "").strip()
     categoria_id = form.get("categoria_id", "").strip()
     descripcion = form.get("descripcion", "").strip()
-    beneficiario_id = form.get("beneficiario_id", "").strip()
+
+    if not codigo_barras:
+        errores.append("Debes escanear o ingresar el código de barras.")
+
+    if not donante_nombre or len(donante_nombre) < 2:
+        errores.append("El nombre del donante debe tener mínimo 2 caracteres.")
+
+    if not donante_correo:
+        errores.append("El correo del donante es obligatorio.")
+    elif "@" not in donante_correo or "." not in donante_correo:
+        errores.append("El correo del donante no tiene un formato válido.")
+
+    if donante_telefono and len(donante_telefono) < 7:
+        errores.append("El teléfono debe tener mínimo 7 caracteres.")
 
     if not categoria_id:
         errores.append("Debes seleccionar una categoría.")
 
     if not descripcion or len(descripcion) < 5:
         errores.append("La descripción debe tener mínimo 5 caracteres.")
-
-    if not beneficiario_id:
-        errores.append("Debes seleccionar un beneficiario.")
 
     return len(errores) == 0, errores
 

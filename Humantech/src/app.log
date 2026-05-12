@@ -2954,3 +2954,123 @@ INFO:werkzeug:127.0.0.1 - - [11/May/2026 22:25:58] "[36mGET /static/styles/dona
 INFO:werkzeug:127.0.0.1 - - [11/May/2026 22:25:58] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
 INFO:werkzeug:127.0.0.1 - - [11/May/2026 22:25:58] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
 INFO:werkzeug:127.0.0.1 - - [11/May/2026 22:25:58] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 22:59:33] "GET /donacion HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 22:59:33] "GET /static/styles/donacion.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 22:59:33] "GET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 22:59:33] "GET /static/styles/styles.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 22:59:33] "GET /static/img/Hospital%202.png HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 22:59:33] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:werkzeug: * Detected change in '/Users/santi/Repos/Personal/Clinica-Juguetess/Humantech/src/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 787-990-670
+INFO:werkzeug: * Detected change in '/Users/santi/Repos/Personal/Clinica-Juguetess/Humantech/src/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 787-990-670
+INFO:werkzeug: * Detected change in '/Users/santi/Repos/Personal/Clinica-Juguetess/Humantech/src/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.1.18:5001
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 787-990-670
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:16:07] "GET /donacion HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:16:07] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:16:07] "[36mGET /static/styles/donacion.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:16:07] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:16:08] "[36mGET /static/img/Hospital%202.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:16:08] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:werkzeug: * Detected change in '/Users/santi/Repos/Personal/Clinica-Juguetess/Humantech/src/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.1.18:5001
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 787-990-670
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:28:10] "GET /donacion HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:28:10] "GET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:28:10] "GET /static/styles/donacion.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:28:10] "GET /static/styles/styles.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:28:10] "GET /static/img/Hospital%202.png HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:28:10] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:29:33] "[32mPOST /donacion HTTP/1.1[0m" 302 -
+ERROR:root:Error cargando historial
+Traceback (most recent call last):
+  File "/Users/santi/Repos/Personal/Clinica-Juguetess/Humantech/src/app.py", line 514, in historial
+    cur.execute(query, tuple(params))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/santi/Repos/Personal/Clinica-Juguetess/.venv/lib/python3.13/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/Users/santi/Repos/Personal/Clinica-Juguetess/.venv/lib/python3.13/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+    ~~~~~~~~^^^
+  File "/Users/santi/Repos/Personal/Clinica-Juguetess/.venv/lib/python3.13/site-packages/MySQLdb/connections.py", line 286, in query
+    _mysql.connection.query(self, query)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+MySQLdb.OperationalError: (1054, "Unknown column 'j.categoria' in 'field list'")
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:29:33] "GET /historial HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:29:33] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:29:33] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:29:33] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:29:33] "[36mGET /static/styles/historial.css HTTP/1.1[0m" 304 -
+INFO:werkzeug: * Detected change in '/Users/santi/Repos/Personal/Clinica-Juguetess/Humantech/src/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 787-990-670
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:34:15] "GET /historial HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:34:15] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:34:15] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:34:15] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:34:15] "[36mGET /static/styles/historial.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:04] "GET /historial HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:04] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:04] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:04] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:04] "GET /static/styles/historial.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:13] "GET /historial?estado=&codigo_barras=JUG-000001&donante=&beneficiario= HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:13] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:13] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:13] "[36mGET /static/styles/historial.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:13] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:15] "GET /historial HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:15] "[36mGET /static/styles/historial.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:15] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:15] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:15] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:28] "GET /donacion HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:28] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:28] "[36mGET /static/styles/donacion.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:28] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:28] "[36mGET /static/img/Hospital%202.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:50] "GET /categorias HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:50] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:50] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:36:50] "[36mGET /static/styles/categorias.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:37:46] "[32mPOST /categorias/8/editar HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:37:46] "GET /categorias HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:37:46] "[36mGET /static/styles/categorias.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:37:46] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:37:46] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:37:53] "GET /donacion HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:37:53] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:37:53] "[36mGET /static/styles/donacion.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:37:53] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:37:53] "[36mGET /static/img/Hospital%202.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:30] "[32mPOST /donacion HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:30] "GET /historial HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:30] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:30] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:30] "[36mGET /static/styles/historial.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:30] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:55] "GET /historial?estado=&codigo_barras=123456789&donante=&beneficiario= HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:55] "[36mGET /static/styles/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:55] "[36mGET /static/styles/home.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:55] "[36mGET /static/styles/historial.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [11/May/2026 23:38:55] "[36mGET /static/img/logo_ucc_2018(CURVAS)-01.jpg HTTP/1.1[0m" 304 -
