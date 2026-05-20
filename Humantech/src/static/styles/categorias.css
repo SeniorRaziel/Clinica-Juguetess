@@ -111,3 +111,35 @@
 
     font-size: 14px;
 }
+/* PAGINACION */
+
+.paginacion {
+    margin: 32px auto 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.paginacion a,
+.paginacion span {
+    padding: 12px 18px;
+    border-radius: 10px;
+}
+
+.paginacion a {
+    background: #1e88e5;
+    color: white;
+    text-decoration: none;
+}
+
+.paginacion a:hover {
+    background: #1565c0;
+}
+
+.paginacion span {
+    background: white;
+    color: #37474f;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}

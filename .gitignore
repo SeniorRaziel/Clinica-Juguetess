@@ -15,6 +15,7 @@ env/
 app.log
 src/app.log
 Humantech/src/app.log
+Humantech/src/__pycache__
 
 # Env vars
 .env
