@@ -29,7 +29,7 @@ def categorias():
                 """
                 INSERT INTO categorias (nombre, activa)
                 VALUES (%s, TRUE)
-            """,
+                """,
                 (nombre,),
             )
 
@@ -47,12 +47,15 @@ def categorias():
     nombre = request.args.get("nombre", "").strip()
     estado = request.args.get("estado", "").strip()
 
-    query = """
-        SELECT
-            id,
-            nombre,
-            activa,
-            creado_en
+    page = request.args.get("page", 1, type=int)
+    per_page = 10
+
+    if page < 1:
+        page = 1
+
+    offset = (page - 1) * per_page
+
+    base_query = """
         FROM categorias
         WHERE 1 = 1
     """
@@ -60,27 +63,68 @@ def categorias():
     params = []
 
     if nombre:
-        query += " AND LOWER(nombre) LIKE LOWER(%s)"
+        base_query += " AND LOWER(nombre) LIKE LOWER(%s)"
         params.append(f"%{nombre}%")
 
     if estado == "activas":
-        query += " AND activa = TRUE"
-
+        base_query += " AND activa = TRUE"
     elif estado == "inactivas":
-        query += " AND activa = FALSE"
+        base_query += " AND activa = FALSE"
 
-    query += " ORDER BY activa DESC, nombre ASC"
+    try:
+        cur = mysql.connection.cursor()
 
-    cur = mysql.connection.cursor()
-    cur.execute(query, tuple(params))
+        count_query = "SELECT COUNT(*) AS total " + base_query
+        cur.execute(count_query, tuple(params))
+        total = cur.fetchone()["total"]
 
-    categorias = cur.fetchall()
+        query = (
+            """
+            SELECT
+                id,
+                nombre,
+                activa,
+                creado_en
+        """
+            + base_query
+            + """
+            ORDER BY activa DESC, nombre ASC
+            LIMIT %s OFFSET %s
+        """
+        )
 
-    cur.close()
+        cur.execute(query, tuple(params + [per_page, offset]))
+        categorias = cur.fetchall()
+        cur.close()
 
-    filtros = {"nombre": nombre, "estado": estado}
+        total_pages = (total + per_page - 1) // per_page
 
-    return render_template("categorias.html", categorias=categorias, filtros=filtros)
+        filtros = {
+            "nombre": nombre,
+            "estado": estado,
+        }
+
+        return render_template(
+            "categorias.html",
+            categorias=categorias,
+            filtros=filtros,
+            page=page,
+            total_pages=total_pages,
+            total=total,
+        )
+
+    except Exception as e:
+        logging.exception("Error cargando categorías")
+        flash(f"Error cargando categorías: {str(e)}", "error")
+
+        return render_template(
+            "categorias.html",
+            categorias=[],
+            filtros={},
+            page=1,
+            total_pages=0,
+            total=0,
+        )
 
 
 @categorias_bp.route("/categorias/<int:categoria_id>/editar", methods=["POST"])

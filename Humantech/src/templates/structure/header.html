@@ -36,8 +36,8 @@
     
         <nav class="app-nav">
             <a href="{{ url_for('home.home') }}">Inicio</a>
-            <a href="{{ url_for('juguetes.historial') }}">Historial</a>
             <a href="{{ url_for('juguetes.donacion') }}">Donar</a>
+            <a href="{{ url_for('juguetes.historial') }}">Historial</a>
 
             {% if session.get('usuario_rol') == 'admin' %}
                 <a href="{{ url_for('categorias.categorias') }}">Categorías</a>

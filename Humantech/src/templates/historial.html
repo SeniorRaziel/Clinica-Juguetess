@@ -118,7 +118,7 @@
                             <textarea name="observaciones_entrega" rows="2" placeholder="Observaciones de la entrega"></textarea>
                         </div>
             
-                        <button type="submit" class="btn-donar">Actualizar estado</button>
+                        <button type="submit" class="btn btn-secondary">Actualizar estado</button>
                     </form>
                 {% endif %}
             
@@ -129,6 +129,37 @@
             </li>
             {% endfor %}
         </ul>
+        {% if total_pages > 1 %}
+            <nav class="paginacion">
+                {% if page > 1 %}
+                    <a href="{{ url_for('juguetes.historial',
+                        estado=filtros.get('estado'),
+                        codigo_barras=filtros.get('codigo_barras'),
+                        donante=filtros.get('donante'),
+                        beneficiario=filtros.get('beneficiario'),
+                        page=page-1
+                    ) }}">
+                        ← Anterior
+                    </a>
+                {% endif %}
+                
+                <span>
+                    Página {{ page }} de {{ total_pages }} · {{ total }} registros
+                </span>
+            
+                {% if page < total_pages %}
+                    <a href="{{ url_for('juguetes.historial',
+                        estado=filtros.get('estado'),
+                        codigo_barras=filtros.get('codigo_barras'),
+                        donante=filtros.get('donante'),
+                        beneficiario=filtros.get('beneficiario'),
+                        page=page+1
+                    ) }}">
+                        Siguiente →
+                    </a>
+                {% endif %}
+            </nav>
+        {% endif %}
     {% else %}
         <p class="empty-state">No hay juguetes registrados todavía.</p>
     {% endif %}

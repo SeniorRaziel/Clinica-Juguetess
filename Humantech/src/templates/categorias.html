@@ -35,19 +35,19 @@
             </option>
         </select>
 
-        <button type="submit" class="btn-donar">
+        <button type="submit" class="btn btn-secondary">
             Filtrar
         </button>
 
         <a href="{{ url_for('categorias.categorias') }}"
-           class="btn-limpiar">
+           class="btn btn-neutral">
             Limpiar
         </a>
     </form>
 
     <form class="categoria-form" method="POST" action="{{ url_for('categorias.categorias') }}">
         <input type="text" name="nombre" placeholder="Nueva categoría" required minlength="2">
-        <button type="submit" class="btn-donar">Crear categoría</button>
+        <button type="submit" class="btn btn-primary">Crear categoría</button>
     </form>
 
     <table class="categorias-table">
@@ -78,12 +78,39 @@
                         </td>
 
                         <td>
-                            <button type="submit" class="btn-donar">Guardar</button>
+                            <button type="submit" class="btn btn-success">Guardar</button>
                         </td>
                     </form>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% if total_pages > 1 %}
+        <nav class="paginacion">
+            {% if page > 1 %}
+                <a href="{{ url_for('categorias.categorias',
+                    nombre=filtros.get('nombre'),
+                    estado=filtros.get('estado'),
+                    page=page-1
+                ) }}">
+                    ← Anterior
+                </a>
+            {% endif %}
+
+            <span>
+                Página {{ page }} de {{ total_pages }} · {{ total }} registros
+            </span>
+
+            {% if page < total_pages %}
+                <a href="{{ url_for('categorias.categorias',
+                    nombre=filtros.get('nombre'),
+                    estado=filtros.get('estado'),
+                    page=page+1
+                ) }}">
+                    Siguiente →
+                </a>
+            {% endif %}
+        </nav>
+    {% endif %}
 </main>
 {% endblock %}

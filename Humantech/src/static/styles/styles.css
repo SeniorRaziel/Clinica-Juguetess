@@ -230,3 +230,61 @@ body {
         transform: translateX(0);
     }
 }
+
+.btn {
+    border: none;
+    border-radius: 10px;
+    padding: 11px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s ease;
+    text-decoration: none;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* PRIMARIO */
+
+.btn-primary {
+    background: #1e88e5;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1565c0;
+}
+
+/* SUCCESS */
+
+.btn-success {
+    background: #43a047;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #2e7d32;
+}
+
+/* SECUNDARIO */
+
+.btn-secondary {
+    background: #546e7a;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #37474f;
+}
+
+/* NEUTRAL */
+
+.btn-neutral {
+    background: #eceff1;
+    color: #263238;
+}
+
+.btn-neutral:hover {
+    background: #cfd8dc;
+}

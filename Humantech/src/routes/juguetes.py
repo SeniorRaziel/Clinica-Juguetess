@@ -139,7 +139,7 @@ def donacion():
 
             flash("Juguete registrado correctamente.", "success")
 
-            return redirect(url_for("historial"))
+            return redirect(url_for("juguetes.historial"))
 
         except Exception as e:
 
@@ -158,17 +158,74 @@ def donacion():
 def historial():
     if "usuario_id" not in session:
         flash("Debes iniciar sesión para consultar el historial.", "warning")
-        return redirect(url_for("login", next=request.url))
+        return redirect(url_for("auth.login", next=request.url))
 
     estado = request.args.get("estado", "").strip()
     codigo_barras = request.args.get("codigo_barras", "").strip()
     donante = request.args.get("donante", "").strip()
     beneficiario = request.args.get("beneficiario", "").strip()
 
+    page = request.args.get("page", 1, type=int)
+    per_page = 6
+
+    if page < 1:
+        page = 1
+
+    offset = (page - 1) * per_page
+
     try:
         cur = mysql.connection.cursor()
 
-        query = """
+        base_from = """
+            FROM juguetes j
+            INNER JOIN categorias c ON c.id = j.categoria_id
+            LEFT JOIN entregas e ON e.juguete_id = j.id
+            LEFT JOIN beneficiarios b ON b.id = e.beneficiario_id
+            WHERE 1 = 1
+        """
+
+        params = []
+
+        if session.get("usuario_rol") != "admin":
+            base_from += " AND j.donante_id = %s"
+            params.append(session["usuario_id"])
+
+        if estado:
+            base_from += " AND j.estado_actual = %s"
+            params.append(estado)
+
+        if codigo_barras:
+            base_from += " AND j.codigo_barras LIKE %s"
+            params.append(f"%{codigo_barras}%")
+
+        if donante:
+            base_from += """
+                AND (
+                    j.donante_nombre LIKE %s
+                    OR j.donante_correo LIKE %s
+                    OR j.donante_telefono LIKE %s
+                )
+            """
+            like_donante = f"%{donante}%"
+            params.extend([like_donante, like_donante, like_donante])
+
+        if beneficiario:
+            base_from += """
+                AND (
+                    b.nombre LIKE %s
+                    OR b.institucion LIKE %s
+                )
+            """
+            like_beneficiario = f"%{beneficiario}%"
+            params.extend([like_beneficiario, like_beneficiario])
+
+        count_query = "SELECT COUNT(*) AS total " + base_from
+
+        cur.execute(count_query, tuple(params))
+        total = cur.fetchone()["total"]
+
+        query = (
+            """
             SELECT
                 j.id,
                 j.codigo_barras,
@@ -183,57 +240,23 @@ def historial():
                 c.nombre AS categoria_nombre,
 
                 b.nombre AS beneficiario_nombre,
-                b.documento AS beneficiario_documento,
+                b.edad AS beneficiario_edad,
+                b.institucion AS beneficiario_institucion,
                 e.lugar_entrega,
                 e.fecha_entrega
-
-            FROM juguetes j
-            INNER JOIN categorias c ON c.id = j.categoria_id
-            LEFT JOIN entregas e ON e.juguete_id = j.id
-            LEFT JOIN beneficiarios b ON b.id = e.beneficiario_id
-            WHERE 1 = 1
         """
+            + base_from
+            + """
+            ORDER BY j.fecha_recepcion DESC
+            LIMIT %s OFFSET %s
+        """
+        )
 
-        params = []
-
-        if session.get("usuario_rol") != "admin":
-            query += " AND j.donante_id = %s"
-            params.append(session["usuario_id"])
-
-        if estado:
-            query += " AND j.estado_actual = %s"
-            params.append(estado)
-
-        if codigo_barras:
-            query += " AND j.codigo_barras LIKE %s"
-            params.append(f"%{codigo_barras}%")
-
-        if donante:
-            query += """
-                AND (
-                    j.donante_nombre LIKE %s
-                    OR j.donante_correo LIKE %s
-                    OR j.donante_telefono LIKE %s
-                )
-            """
-            like_donante = f"%{donante}%"
-            params.extend([like_donante, like_donante, like_donante])
-
-        if beneficiario:
-            query += """
-                AND (
-                    b.nombre LIKE %s
-                    OR b.documento LIKE %s
-                )
-            """
-            like_beneficiario = f"%{beneficiario}%"
-            params.extend([like_beneficiario, like_beneficiario])
-
-        query += " ORDER BY j.fecha_recepcion DESC"
-
-        cur.execute(query, tuple(params))
+        cur.execute(query, tuple(params + [per_page, offset]))
         juguetes = cur.fetchall()
         cur.close()
+
+        total_pages = (total + per_page - 1) // per_page
 
         filtros = {
             "estado": estado,
@@ -242,12 +265,27 @@ def historial():
             "beneficiario": beneficiario,
         }
 
-        return render_template("historial.html", juguetes=juguetes, filtros=filtros)
+        return render_template(
+            "historial.html",
+            juguetes=juguetes,
+            filtros=filtros,
+            page=page,
+            total_pages=total_pages,
+            total=total,
+        )
 
     except Exception as e:
         logging.exception("Error cargando historial")
         flash(f"Error al cargar historial: {str(e)}", "error")
-        return render_template("historial.html", juguetes=[], filtros={})
+
+        return render_template(
+            "historial.html",
+            juguetes=[],
+            filtros={},
+            page=1,
+            total_pages=0,
+            total=0,
+        )
 
 
 @juguetes_bp.route("/juguetes/<int:juguete_id>/estado", methods=["POST"])
@@ -258,7 +296,7 @@ def actualizar_estado_juguete(juguete_id):
 
     if session.get("usuario_rol") != "admin":
         flash("No tienes permisos para actualizar estados.", "error")
-        return redirect(url_for("historial"))
+        return redirect(url_for("juguetes.historial"))
 
     nuevo_estado = request.form.get("estado", "").strip()
     observacion = request.form.get("observacion", "").strip()
@@ -275,7 +313,7 @@ def actualizar_estado_juguete(juguete_id):
 
     if nuevo_estado not in estados_validos:
         flash("Estado no válido.", "error")
-        return redirect(url_for("historial"))
+        return redirect(url_for("juguetes.historial"))
 
     try:
         cur = mysql.connection.cursor()
@@ -286,7 +324,7 @@ def actualizar_estado_juguete(juguete_id):
         if not juguete:
             cur.close()
             flash("El juguete no existe.", "error")
-            return redirect(url_for("historial"))
+            return redirect(url_for("juguetes.historial"))
 
         estado_anterior = juguete["estado_actual"]
 
@@ -333,7 +371,7 @@ def actualizar_estado_juguete(juguete_id):
                     "Para entregar el juguete debes ingresar beneficiario y lugar de entrega.",
                     "error",
                 )
-                return redirect(url_for("historial"))
+                return redirect(url_for("juguetes.historial"))
 
             cur.execute(
                 """
@@ -384,7 +422,7 @@ def actualizar_estado_juguete(juguete_id):
         logging.exception("Error actualizando estado")
         flash(f"Error al actualizar estado: {str(e)}", "error")
 
-    return redirect(url_for("historial"))
+    return redirect(url_for("juguetes.historial"))
 
 
 @juguetes_bp.route("/juguetes/<int:juguete_id>")
