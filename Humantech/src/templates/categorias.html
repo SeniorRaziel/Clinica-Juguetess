@@ -12,7 +12,7 @@
 
     <form class="categoria-form filtros-form"
           method="GET"
-          action="{{ url_for('categorias') }}">
+          action="{{ url_for('categorias.categorias') }}">
 
         <input
             type="text"
@@ -39,13 +39,13 @@
             Filtrar
         </button>
 
-        <a href="{{ url_for('categorias') }}"
+        <a href="{{ url_for('categorias.categorias') }}"
            class="btn-limpiar">
             Limpiar
         </a>
     </form>
 
-    <form class="categoria-form" method="POST" action="{{ url_for('categorias') }}">
+    <form class="categoria-form" method="POST" action="{{ url_for('categorias.categorias') }}">
         <input type="text" name="nombre" placeholder="Nueva categoría" required minlength="2">
         <button type="submit" class="btn-donar">Crear categoría</button>
     </form>
@@ -63,7 +63,7 @@
         <tbody>
             {% for categoria in categorias %}
                 <tr>
-                    <form method="POST" action="{{ url_for('editar_categoria', categoria_id=categoria.id) }}">
+                    <form method="POST" action="{{ url_for('categorias.editar_categoria', categoria_id=categoria.id) }}">
                         <td>{{ categoria.id }}</td>
 
                         <td>

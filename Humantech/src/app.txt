@@ -246,7 +246,7 @@ def registro():
             cur.close()
 
             flash("Usuario registrado correctamente. Ahora puedes iniciar sesión.", "success")
-            return redirect(url_for("login"))
+            return redirect(url_for("auth.login"))
 
         except Exception as e:
             logging.exception("Error en registro")
@@ -259,7 +259,7 @@ def registro():
 def donacion():
     if "usuario" not in session:
         flash("Debes iniciar sesión para registrar una donación.", "warning")
-        return redirect(url_for("login"))
+        return redirect(url_for("auth.login"))
 
     datos = {}
 
@@ -316,7 +316,7 @@ def donacion():
             cur.close()
 
             flash("Donación registrada correctamente.", "success")
-            return redirect(url_for("donacion"))
+            return redirect(url_for("juguetes.donacion"))
 
         except Exception as e:
             logging.exception("Error registrando donación")

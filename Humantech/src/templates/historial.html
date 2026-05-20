@@ -12,7 +12,7 @@
 <main class="historial-container">
     <h2>Historial de Juguetes</h2>
 
-    <form class="filtros-historial" method="GET" action="{{ url_for('historial') }}">
+    <form class="filtros-historial" method="GET" action="{{ url_for('juguetes.historial') }}">
         <div>
             <label for="estado">Estado</label>
             <select id="estado" name="estado">
@@ -64,7 +64,7 @@
     
         <div class="filtros-acciones">
             <button type="submit" class="btn-donar">Filtrar</button>
-            <a href="{{ url_for('historial') }}" class="btn-limpiar">Limpiar</a>
+            <a href="{{ url_for('juguetes.historial') }}" class="btn-limpiar">Limpiar</a>
         </div>
     </form>
     {% if juguetes %}
@@ -87,7 +87,7 @@
                 <strong>Fecha de recepción:</strong> {{ juguete.fecha_recepcion }}<br>
             
                 {% if session.get('usuario_rol') == 'admin' %}
-                    <form action="{{ url_for('actualizar_estado_juguete', juguete_id=juguete.id) }}"
+                    <form action="{{ url_for('juguetes.actualizar_estado_juguete', juguete_id=juguete.id) }}"
                           method="POST"
                           class="estado-form form-estado-juguete"
                           data-juguete-id="{{ juguete.id }}"
@@ -122,7 +122,7 @@
                     </form>
                 {% endif %}
             
-                <a href="{{ url_for('detalle_juguete', juguete_id=juguete.id) }}"
+                <a href="{{ url_for('juguetes.detalle_juguete', juguete_id=juguete.id) }}"
                    class="btn-trazabilidad">
                     Ver trazabilidad
                 </a>
@@ -134,7 +134,7 @@
     {% endif %}
 
     <div style="text-align:center; margin: 20px 0;">
-        <a href="{{ url_for('home') }}" class="btn-donar">Volver al inicio</a>
+        <a href="{{ url_for('home.home') }}" class="btn-donar">Volver al inicio</a>
     </div>
 </main>
 {% endblock %}
