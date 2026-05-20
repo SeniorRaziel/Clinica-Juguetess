@@ -1,0 +1,31 @@
+#!/bin/bash
+
+echo "==================================="
+echo " CLINICA DE JUGUETES - START"
+echo "==================================="
+
+echo ""
+echo "Levantando contenedor MySQL..."
+docker start clinica-mysql >/dev/null 2>&1 || \
+docker run -d \
+  --name clinica-mysql \
+  -e MYSQL_ROOT_PASSWORD=123456789 \
+  -e MYSQL_DATABASE=clinica_juguetes \
+  -p 3306:3306 \
+  mysql:8.0
+
+echo ""
+echo "Activando entorno virtual..."
+
+source .venv/bin/activate
+
+echo ""
+echo "Instalando dependencias..."
+pip install -r src/requirements.txt
+
+echo ""
+echo "Iniciando aplicación Flask..."
+
+cd src
+
+python app.py

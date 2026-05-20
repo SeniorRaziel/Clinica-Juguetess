@@ -9,6 +9,7 @@ __pycache__/
 .venv/
 venv/
 env/
+.vscode/settings.json
 
 # Logs
 *.log
@@ -44,3 +45,5 @@ instance/
 .pytest_cache/
 .coverage
 htmlcov/
+
+.vscode/
